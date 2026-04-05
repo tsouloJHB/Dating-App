@@ -1,0 +1,3 @@
+{
+  "extends": "@JustHookUps/config/tsconfig.base.json"
+}
