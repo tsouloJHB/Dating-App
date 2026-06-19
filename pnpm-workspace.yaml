@@ -2,7 +2,6 @@ packages:
   - "apps/*"
   - "packages/*"
 
-# Change 'catalog:' to 'catalogs:' and indent your keys under 'default:'
 catalogs:
   default:
     dotenv: ^17.2.2
