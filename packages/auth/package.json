@@ -1,24 +1,24 @@
 {
-  "name": "@JustHookUps/auth",
-  "type": "module",
-  "exports": {
-    ".": {
-      "default": "./src/index.ts"
-    },
-    "./*": {
-      "default": "./src/*.ts"
-    }
-  },
-  "scripts": {},
-  "dependencies": {
-    "@JustHookUps/db": "workspace:*",
-    "@JustHookUps/env": "workspace:*",
-    "better-auth": "catalog:",
-    "dotenv": "catalog:",
-    "zod": "catalog:"
-  },
-  "devDependencies": {
-    "@JustHookUps/config": "workspace:*",
-    "typescript": "catalog:"
-  }
+	"name": "@JustHookUps/auth",
+	"type": "module",
+	"exports": {
+		".": {
+			"default": "./src/index.ts"
+		},
+		"./*": {
+			"default": "./src/*.ts"
+		}
+	},
+	"scripts": {},
+	"dependencies": {
+		"@JustHookUps/db": "workspace:*",
+		"@JustHookUps/env": "workspace:*",
+		"better-auth": "catalog:",
+		"dotenv": "catalog:",
+		"zod": "catalog:"
+	},
+	"devDependencies": {
+		"@JustHookUps/config": "workspace:*",
+		"typescript": "catalog:"
+	}
 }

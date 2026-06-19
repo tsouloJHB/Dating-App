@@ -1,36 +1,40 @@
 {
-  "name": "JustHookUps",
-  "private": true,
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
-  "type": "module",
-  "scripts": {
-    "dev": "turbo dev",
-    "build": "turbo build",
-    "check-types": "turbo check-types",
-    "dev:server": "turbo -F server dev",
-    "db:push": "turbo -F @JustHookUps/db db:push",
-    "db:studio": "turbo -F @JustHookUps/db db:studio",
-    "db:generate": "turbo -F @JustHookUps/db db:generate",
-    "db:migrate": "turbo -F @JustHookUps/db db:migrate",
-    "deploy": "turbo -F @JustHookUps/infra deploy",
-    "destroy": "turbo -F @JustHookUps/infra destroy",
-    "check": "biome check --write ."
-  },
-  "dependencies": {
-    "@JustHookUps/env": "workspace:*",
-    "dotenv": "catalog:",
-    "zod": "catalog:"
-  },
-  "devDependencies": {
-    "@JustHookUps/config": "workspace:*",
-    "@biomejs/biome": "^2.2.0",
-    "@cloudflare/workers-types": "catalog:",
-    "@types/node": "catalog:",
-    "turbo": "^2.8.12",
-    "typescript": "catalog:"
-  },
-  "packageManager": "pnpm@10.28.2"
+	"name": "JustHookUps",
+	"private": true,
+	"workspaces": [
+		"apps/*",
+		"packages/*"
+	],
+	"type": "module",
+	"scripts": {
+		"dev": "turbo dev --filter=server",
+		"build": "turbo build",
+		"check-types": "turbo check-types",
+		"dev:server": "turbo -F server dev",
+		"dev:alchemy": "turbo -F @JustHookUps/alchemy dev",
+		"db:push": "turbo -F @JustHookUps/db db:push",
+		"db:studio": "turbo -F @JustHookUps/db db:studio",
+		"db:generate": "turbo -F @JustHookUps/db db:generate",
+		"db:migrate": "turbo -F @JustHookUps/db db:migrate",
+		"deploy": "turbo -F @JustHookUps/alchemy deploy",
+		"destroy": "turbo -F @JustHookUps/alchemy destroy",
+		"check": "biome check --write .",
+		"env:check": "node --experimental-strip-types scripts/check-env.ts",
+		"prepare": "husky"
+	},
+	"dependencies": {
+		"@JustHookUps/env": "workspace:*",
+		"dotenv": "catalog:",
+		"zod": "catalog:"
+	},
+	"devDependencies": {
+		"@JustHookUps/config": "workspace:*",
+		"@biomejs/biome": "^2.2.0",
+		"@cloudflare/workers-types": "catalog:",
+		"@types/node": "catalog:",
+		"turbo": "^2.8.12",
+		"typescript": "catalog:",
+		"husky": "^9.1.7"
+	},
+	"packageManager": "pnpm@10.28.2"
 }

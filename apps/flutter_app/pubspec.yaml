@@ -1,0 +1,85 @@
+name: justhookups
+description: "JustHookups - Premium Social Discovery Platform"
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.2.0 <4.0.0'
+  flutter: '>=3.16.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # State Management
+  flutter_riverpod: ^2.4.0
+  riverpod_annotation: ^2.1.0
+  
+  # Networking
+  dio: ^5.3.0
+  
+  # Hardware/OS  
+  location: ^5.0.0
+  
+  # Notifications
+  flutter_local_notifications: ^17.0.0
+  
+  # Persistence
+  shared_preferences: ^2.2.0
+  
+  # UI Utilities
+  cached_network_image: ^3.3.0
+  flutter_blurhash: ^0.8.0
+  
+  # Payments
+  in_app_purchase: ^3.1.0
+  in_app_purchase_android: ^0.3.0
+  in_app_purchase_storekit: ^0.3.0
+  
+  # Data Models
+  freezed_annotation: ^2.4.0
+  json_annotation: ^4.9.0
+  json_serializable: ^6.7.0
+  
+  # Additional Utilities
+  go_router: ^13.0.0
+  intl: ^0.19.0
+  uuid: ^4.0.0
+  connectivity_plus: ^5.0.0
+  image_picker: ^1.1.2
+  firebase_auth: ^6.4.0
+  google_sign_in: ^7.2.0
+  firebase_core: ^4.7.0
+  google_sign_in_web: ^1.1.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  
+  flutter_lints: ^3.0.0
+  build_runner: ^2.4.0
+  freezed: ^2.4.0
+  riverpod_generator: ^2.3.0
+  flutter_launcher_icons: ^0.14.3
+
+flutter:
+  uses-material-design: true
+  
+  assets:
+    - assets/images/
+    - assets/branding/app_logo.png
+    - assets/secrets/
+
+# Generates launcher icons for Android, iOS, and Web from the master artwork.
+# Run: dart run flutter_launcher_icons
+flutter_launcher_icons:
+  image_path: assets/icons/Assets.xcassets/AppIcon.appiconset/1024.png
+  android: true
+  ios: true
+  web:
+    generate: true
+  # Adaptive launcher (Android 8+): red field matches AGENTS.md primary red.
+  adaptive_icon_background: "#FF0000"
+  adaptive_icon_foreground: assets/icons/Assets.xcassets/AppIcon.appiconset/1024.png
+  remove_alpha_ios: true

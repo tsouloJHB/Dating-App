@@ -1,14 +1,12 @@
 import { env } from "@JustHookUps/env/server";
-import { drizzle } from "drizzle-orm/node-postgres";
-import { Pool } from "pg";
+import { drizzle } from "drizzle-orm/neon-http";
 
 import * as schema from "./schema";
 
 export function createDb() {
-  const pool = new Pool({
-    connectionString: env.DATABASE_URL || "",
-    maxUses: 1,
-  });
-
-  return drizzle({ client: pool, schema });
+	const url = env.DATABASE_URL;
+	if (!url) {
+		throw new Error("DATABASE_URL is required");
+	}
+	return drizzle(url, { schema });
 }

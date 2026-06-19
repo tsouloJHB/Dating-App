@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- Required for usePathUrlStrategy(): href must end with "/" -->
+  <base href="/">
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="JustHookups - Premium Social Discovery Platform">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="JustHookups">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <title>JustHookups</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" type="text/css" href="styles.css">
+  <meta name="theme-color" content="#FFFFFF">
+  <!-- Optional Google Sign-In (GIS): same OAuth Web client ID as Better Auth / Flutter dart-define.
+       Prefer: flutter run -d chrome --dart-define=GOOGLE_WEB_CLIENT_ID=YOUR_ID.apps.googleusercontent.com
+  <meta name="google-signin-client_id" content="YOUR_WEB_CLIENT_ID.apps.googleusercontent.com">
+  -->
+</head>
+<body>
+  <script>
+    window.addEventListener('beforeinstallprompt', (e) => {
+      console.log('beforeinstallprompt');
+      e.preventDefault();
+      deferredPrompt = e;
+      showInstallPrompt();
+    });
+    window.addEventListener('appinstalled', () => {
+      console.log('appinstalled');
+    });
+  </script>
+  <noscript>
+    This app requires JavaScript to be enabled.
+  </noscript>
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>

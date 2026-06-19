@@ -1,0 +1,1 @@
+ALTER TABLE "profile" ADD COLUMN IF NOT EXISTS "tier_expires_at" timestamp;

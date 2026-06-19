@@ -13,6 +13,16 @@ This project was created with [Better-T-Stack](https://github.com/AmanVarshney01
 - **Biome** - Linting and formatting
 - **Turborepo** - Optimized monorepo build system
 
+## Design References
+
+Use `templets/` as the screen design reference source for implementation and reviews.
+
+- Auth: `templets/sign_in_light_mode/code.html`, `templets/sign_up_light_mode/code.html`
+- Discover: `templets/discover_light_mode/code.html`, `templets/discover_profile_card/code.html`
+- Activity/Inbox: `templets/who_liked_me_light_mode/code.html`, `templets/profile_visitors_light_mode/code.html`, `templets/matches_grid_light_mode/code.html`, `templets/activity_messages/code.html`
+- Profile detail: `templets/profile_detail_view/code.html`
+- Theme docs: `templets/midnight_crimson/DESIGN.md`, `templets/obsidian_ember/DESIGN.md`
+
 ## Getting Started
 
 First, install the dependencies:
