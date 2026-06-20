@@ -49,7 +49,7 @@ class AuthDataSourceImpl implements AuthDataSource {
     required int age,
   }) async {
     try {
-      final response = await dio.post<Map<String, dynamic>>(
+      final response = await dio.post<dynamic>(
         ApiConstants.authSignUp,
         data: {
           'name': name,
@@ -57,13 +57,17 @@ class AuthDataSourceImpl implements AuthDataSource {
           'password': password,
         },
       );
+      final payload = _asAuthResponseMapOrThrow(
+        response,
+        endpoint: ApiConstants.authSignUp,
+      );
 
       await _persistAuthFromResponse(response);
       await _completeSignupProfile(
         gender: gender,
         sexualOrientation: sexualOrientation,
       );
-      final responseUser = _extractUserFromAuthResponse(response.data);
+      final responseUser = _extractUserFromAuthResponse(payload);
       if (responseUser != null) {
         return responseUser.copyWith(
           gender: gender,
@@ -90,7 +94,7 @@ class AuthDataSourceImpl implements AuthDataSource {
     String? accessToken,
   }) async {
     try {
-      final response = await dio.post<Map<String, dynamic>>(
+      final response = await dio.post<dynamic>(
         ApiConstants.authSignInSocial,
         data: {
           'provider': 'google',
@@ -99,6 +103,10 @@ class AuthDataSourceImpl implements AuthDataSource {
             if (accessToken != null && accessToken.isNotEmpty) 'accessToken': accessToken,
           },
         },
+      );
+      _asAuthResponseMapOrThrow(
+        response,
+        endpoint: ApiConstants.authSignInSocial,
       );
 
       await _persistAuthFromResponse(response);
@@ -141,16 +149,20 @@ class AuthDataSourceImpl implements AuthDataSource {
     required String password,
   }) async {
     try {
-      final response = await dio.post<Map<String, dynamic>>(
+      final response = await dio.post<dynamic>(
         ApiConstants.authSignIn,
         data: {
           'email': email,
           'password': password,
         },
       );
+      final payload = _asAuthResponseMapOrThrow(
+        response,
+        endpoint: ApiConstants.authSignIn,
+      );
 
       await _persistAuthFromResponse(response);
-      final responseUser = _extractUserFromAuthResponse(response.data);
+      final responseUser = _extractUserFromAuthResponse(payload);
       if (responseUser != null) {
         return responseUser;
       }
@@ -201,6 +213,23 @@ class AuthDataSourceImpl implements AuthDataSource {
       return e.error as ApiException;
     }
     return ApiException.fromDio(e);
+  }
+
+  Map<String, dynamic> _asAuthResponseMapOrThrow(
+    Response<dynamic> response, {
+    required String endpoint,
+  }) {
+    final data = response.data;
+    if (data is Map<String, dynamic>) {
+      return data;
+    }
+    throw ApiException(
+      message:
+          'Server returned an unexpected response for $endpoint. '
+          'Check that API_BASE_URL points to the JustHookups API worker.',
+      statusCode: response.statusCode,
+      kind: ApiErrorKind.server,
+    );
   }
 
   Future<void> _completeSignupProfile({

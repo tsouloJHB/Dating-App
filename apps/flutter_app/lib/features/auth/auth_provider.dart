@@ -218,7 +218,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
         isAuthenticated: false,
         profileSetupPending: false,
         clearProfileSetupRoute: true,
-        error: 'Could not sign in. Please try again.',
+        error: 'Could not sign in: $e',
       );
     }
   }
