@@ -5,6 +5,17 @@
         "ALCHEMY_CI_STATE_STORE_CHECK",
         "CLOUDFLARE_API_TOKEN"
     ],
+    "globalPassThroughEnv": [
+        "DATABASE_URL",
+        "CORS_ORIGIN",
+        "BETTER_AUTH_SECRET",
+        "BETTER_AUTH_URL",
+        "GOOGLE_CLIENT_ID",
+        "GOOGLE_CLIENT_SECRET",
+        "GOOGLE_PLAY_SERVICE_ACCOUNT_JSON",
+        "GOOGLE_PLAY_PACKAGE_NAME",
+        "GOOGLE_PLAY_WEBHOOK_SECRET"
+    ],
     "tasks": {
         "build": {
             "dependsOn": ["^build"],
@@ -36,18 +47,7 @@
             "persistent": true
         },
         "deploy": {
-            "cache": false,
-            "passThroughEnv": [
-                "DATABASE_URL",
-                "CORS_ORIGIN",
-                "BETTER_AUTH_SECRET",
-                "BETTER_AUTH_URL",
-                "GOOGLE_CLIENT_ID",
-                "GOOGLE_CLIENT_SECRET",
-                "GOOGLE_PLAY_SERVICE_ACCOUNT_JSON",
-                "GOOGLE_PLAY_PACKAGE_NAME",
-                "GOOGLE_PLAY_WEBHOOK_SECRET"
-            ]
+            "cache": false
         },
         "destroy": {
             "cache": false
