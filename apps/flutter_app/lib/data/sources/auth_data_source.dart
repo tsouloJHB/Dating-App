@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/constants/api_constants.dart';
@@ -249,13 +250,23 @@ class AuthDataSourceImpl implements AuthDataSource {
   Future<void> _persistAuthFromResponse(Response<dynamic> response) async {
     final headerToken = _readSetAuthToken(response);
     final data = response.data;
+    
+    // For Better Auth: check all possible token locations across response formats
     final bodyToken = data == null
         ? null
         : _firstString([
+            // Direct token fields
             data['token'],
             data['accessToken'],
             data['bearerToken'],
+            // Nested session token (standard Better Auth)
             (data['session'] as Map<String, dynamic>?)?['token'],
+            // Nested user.token (some Better Auth variants)
+            (data['user'] as Map<String, dynamic>?)?['token'],
+            // Raw response might be wrapped
+            (data as Map<String, dynamic>?)?['data'] is Map
+                ? ((data as Map<String, dynamic>)['data'] as Map<String, dynamic>?)?['token']
+                : null,
           ]);
 
     final token = (headerToken != null && headerToken.isNotEmpty)
@@ -263,11 +274,21 @@ class AuthDataSourceImpl implements AuthDataSource {
         : bodyToken;
 
     if (token == null || token.isEmpty) {
+      if (kDebugMode) {
+        debugPrint(
+          '[Auth] Warning: no token found in response. '
+          'Headers: ${response.headers}. '
+          'Body keys: ${data is Map ? (data as Map<String, dynamic>).keys : "not a map"}.'
+        );
+      }
       return;
     }
 
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('auth_token', token);
+    if (kDebugMode) {
+      debugPrint('[Auth] Token persisted from response');
+    }
   }
 
   String? _readSetAuthToken(Response response) {
@@ -284,7 +305,7 @@ class AuthDataSourceImpl implements AuthDataSource {
     return null;
   }
 
-  String? _firstString(List<dynamic> values) {
+  String? _firstString(List<dynamic?> values) {
     for (final v in values) {
       if (v is String && v.isNotEmpty) {
         return v;
