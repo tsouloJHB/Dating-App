@@ -27,7 +27,8 @@ function requireEnv(name: string): string {
 const app = await alchemy("justhookups");
 
 // Maintain lowercase names for the resources themselves
-const mediaBucket = R2Bucket("dating-site-media");
+// Register the infrastructure bucket resource, explicitly adopting it if it exists
+const mediaBucket = R2Bucket("dating-site-media", { existing: true });
     
 export const server = await Worker("server", {
     cwd: "../../apps/server",
