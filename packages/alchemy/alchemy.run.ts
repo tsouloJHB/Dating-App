@@ -38,20 +38,24 @@ export const server = await Worker("server", {
     cwd: "../../apps/server",
     entrypoint: "src/index.ts",
     compatibility: "node",
+    // 1. All text configurations, tokens, URLs, and string values go here
+    env: {
+        DATABASE_URL: requireEnv("DATABASE_URL"),
+        CORS_ORIGIN: requireEnv("CORS_ORIGIN"),
+        BETTER_AUTH_SECRET: requireEnv("BETTER_AUTH_SECRET"),
+        BETTER_AUTH_URL: requireEnv("BETTER_AUTH_URL"),
+        
+        GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID ?? "",
+        GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET ?? "",
+        MEDIA_LIST_THUMB_WIDTH: process.env.MEDIA_LIST_THUMB_WIDTH ?? "180",
+        GOOGLE_PLAY_SERVICE_ACCOUNT_JSON: process.env.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON ?? "",
+        GOOGLE_PLAY_PACKAGE_NAME: process.env.GOOGLE_PLAY_PACKAGE_NAME ?? "com.neonebula.Justhookups",
+        GOOGLE_PLAY_WEBHOOK_SECRET: process.env.GOOGLE_PLAY_WEBHOOK_SECRET ?? "",
+    },
+    // 2. ONLY native infrastructure resource objects go here
     bindings: {
-    DATABASE_URL: requireEnv("DATABASE_URL"),
-    CORS_ORIGIN: requireEnv("CORS_ORIGIN"),
-    BETTER_AUTH_SECRET: requireEnv("BETTER_AUTH_SECRET"),
-    BETTER_AUTH_URL: requireEnv("BETTER_AUTH_URL"),
-    
-    GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID ?? "",
-    GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET ?? "",
-    MEDIA_BUCKET: mediaBucket,
-    MEDIA_LIST_THUMB_WIDTH: "", // <--- THIS IS THE PROBLEM
-    GOOGLE_PLAY_SERVICE_ACCOUNT_JSON: process.env.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON ?? "",
-    GOOGLE_PLAY_PACKAGE_NAME: process.env.GOOGLE_PLAY_PACKAGE_NAME ?? "com.neonebula.Justhookups",
-    GOOGLE_PLAY_WEBHOOK_SECRET: process.env.GOOGLE_PLAY_WEBHOOK_SECRET ?? "",
-},
+        MEDIA_BUCKET: mediaBucket,
+    },
     dev: {
         port: 3000,
     },
