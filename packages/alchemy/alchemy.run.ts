@@ -25,7 +25,7 @@ function requireEnv(name: string): string {
 
 const app = await alchemy("JustHookUps");
 
-// Declare the infrastructure resource token cleanly at the top-level
+// Register the infrastructure bucket resource to the app landscape
 const mediaBucket = R2Bucket("dating-site-media");
     
 export const server = await Worker("server", {
@@ -45,9 +45,9 @@ export const server = await Worker("server", {
         GOOGLE_PLAY_PACKAGE_NAME: process.env.GOOGLE_PLAY_PACKAGE_NAME ?? "com.neonebula.Justhookups",
         GOOGLE_PLAY_WEBHOOK_SECRET: process.env.GOOGLE_PLAY_WEBHOOK_SECRET ?? "",
     },
+    // Bind using the pointer reference string instead of passing the raw object literal
     bindings: {
-        // Pass the static reference token directly to the bindings map
-        MEDIA_BUCKET: mediaBucket,
+        MEDIA_BUCKET: "bucket:dating-site-media",
     },
     dev: {
         port: 3000,
