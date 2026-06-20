@@ -9,6 +9,12 @@
 	"scripts": {
 		"dev": "turbo dev --filter=server",
 		"build": "turbo build",
+		"flutter:dev": "cd apps/flutter_app && flutter run --dart-define=ENVIRONMENT=development --dart-define=API_BASE_URL=http://localhost:8787",
+		"flutter:dev:android": "cd apps/flutter_app && flutter run --dart-define=ENVIRONMENT=development --dart-define=API_BASE_URL=http://10.0.2.2:8787",
+		"flutter:preprod": "cd apps/flutter_app && flutter run --dart-define=ENVIRONMENT=preprod --dart-define=API_BASE_URL=https://dating-site-api.thabangsoulo.workers.dev",
+		"flutter:prod": "cd apps/flutter_app && flutter run --dart-define=ENVIRONMENT=production --dart-define=API_BASE_URL=https://api.justhookups.dev",
+		"flutter:build:apk:preprod": "cd apps/flutter_app && flutter build apk --release --dart-define=ENVIRONMENT=preprod --dart-define=API_BASE_URL=https://dating-site-api.thabangsoulo.workers.dev",
+		"flutter:build:apk:prod": "cd apps/flutter_app && flutter build apk --release --dart-define=ENVIRONMENT=production --dart-define=API_BASE_URL=https://api.justhookups.dev",
 		"check-types": "turbo check-types",
 		"dev:server": "turbo -F server dev",
 		"dev:alchemy": "turbo -F @JustHookUps/alchemy dev",

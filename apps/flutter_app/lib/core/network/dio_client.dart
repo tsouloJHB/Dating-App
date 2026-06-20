@@ -14,7 +14,11 @@ class DioClient {
 
     _dio.options.baseUrl = ApiConstants.baseUrl;
     if (kDebugMode) {
-      debugPrint('[Dio] baseUrl=${ApiConstants.baseUrl}');
+      final source = ApiConstants.hasApiBaseUrlOverride
+          ? 'dart-define(API_BASE_URL)'
+          : 'ENVIRONMENT defaults';
+      debugPrint('[Dio] environment=${ApiConstants.environment}');
+      debugPrint('[Dio] baseUrl=${ApiConstants.baseUrl} (source=$source)');
       if (kIsWeb) {
         debugPrint(
           '[Dio] Web app origin (set Worker CORS_ORIGIN to this exact value): '

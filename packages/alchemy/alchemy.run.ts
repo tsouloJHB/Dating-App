@@ -45,8 +45,8 @@ export const server = await Worker("server", {
         BETTER_AUTH_SECRET: requireEnv("BETTER_AUTH_SECRET"),
         BETTER_AUTH_URL: requireEnv("BETTER_AUTH_URL"),
         
-        GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID ?? "",
-        GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET ?? "",
+        GOOGLE_CLIENT_ID: requireEnv("GOOGLE_CLIENT_ID"),
+        GOOGLE_CLIENT_SECRET: requireEnv("GOOGLE_CLIENT_SECRET"),
         MEDIA_LIST_THUMB_WIDTH: process.env.MEDIA_LIST_THUMB_WIDTH ?? "180",
         GOOGLE_PLAY_SERVICE_ACCOUNT_JSON: process.env.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON ?? "",
         GOOGLE_PLAY_PACKAGE_NAME: process.env.GOOGLE_PLAY_PACKAGE_NAME ?? "com.neonebula.Justhookups",

@@ -1,8 +1,49 @@
 import 'package:flutter/foundation.dart';
 
 class ApiConstants {
+  static const String _developmentBaseUrl = 'http://localhost:8787';
+  static const String _preprodBaseUrl =
+      'https://dating-site-api.thabangsoulo.workers.dev';
   /// Production default when not in debug (and no override).
   static const String _productionBaseUrl = 'https://api.justhookups.dev';
+
+  /// Optional environment marker for logs and environment-default routing.
+  ///
+  /// Supported values: `development`, `preprod`, `production`.
+  /// If missing, debug builds default to `development`, release builds to
+  /// `production`.
+  static String get environment {
+    const fromEnv = String.fromEnvironment('ENVIRONMENT');
+    if (fromEnv.isNotEmpty) {
+      return fromEnv.toLowerCase();
+    }
+    return kDebugMode ? 'development' : 'production';
+  }
+
+  static bool get hasApiBaseUrlOverride {
+    const fromEnv = String.fromEnvironment('API_BASE_URL');
+    return fromEnv.isNotEmpty;
+  }
+
+  static String _debugPlatformDefaultBaseUrl() {
+    if (kIsWeb) return _developmentBaseUrl;
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      return 'http://10.0.2.2:8787';
+    }
+    return _developmentBaseUrl;
+  }
+
+  static String _environmentDefaultBaseUrl() {
+    switch (environment) {
+      case 'preprod':
+        return _preprodBaseUrl;
+      case 'production':
+      case 'prod':
+        return _productionBaseUrl;
+      default:
+        return _debugPlatformDefaultBaseUrl();
+    }
+  }
 
   /// Resolved API origin.
   ///
@@ -20,14 +61,7 @@ class ApiConstants {
   static String get baseUrl {
     const fromEnv = String.fromEnvironment('API_BASE_URL');
     if (fromEnv.isNotEmpty) return fromEnv;
-    if (kDebugMode) {
-      if (kIsWeb) return 'http://localhost:8787';
-      if (defaultTargetPlatform == TargetPlatform.android) {
-        return 'http://10.0.2.2:8787';
-      }
-      return 'http://localhost:8787';
-    }
-    return _productionBaseUrl;
+    return _environmentDefaultBaseUrl();
   }
   
   // Auth Endpoints

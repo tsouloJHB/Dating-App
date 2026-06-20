@@ -14,6 +14,15 @@ Used by Hono on Cloudflare Workers (`apps/server`). Same keys must exist as **Wr
 | `BETTER_AUTH_URL` | Public base URL of the API as Better Auth sees it (e.g. `http://127.0.0.1:8787` for local Wrangler). |
 | `MEDIA_BUCKET` | **Not an env string** — R2 **binding** name in Wrangler/Alchemy (`MEDIA_BUCKET`). |
 
+## Required for Google Sign-In
+
+If your app uses Google social sign-in (`POST /api/auth/sign-in/social` with `provider=google`), both variables must be configured in Worker runtime:
+
+| Variable | Purpose |
+| :--- | :--- |
+| `GOOGLE_CLIENT_ID` | OAuth client ID used by Better Auth Google provider. |
+| `GOOGLE_CLIENT_SECRET` | OAuth client secret used by Better Auth Google provider. |
+
 **Session cookies (Better Auth):** In `packages/auth`, cookie defaults follow **`BETTER_AUTH_URL`**: **`https://`** uses `SameSite=None` and `Secure=true` (cross-site browser flows). **`http://`** (typical local Wrangler) uses `SameSite=Lax` and `Secure=false` so browsers accept cookies. Flutter/native clients should still prefer the **bearer** token (`set-auth-token` / `Authorization`).
 
 **Optional — list thumbnails:** Set Worker var **`MEDIA_LIST_THUMB_WIDTH`** (e.g. `200`) to emit **`photoThumbUrls`** on profile payloads via Cloudflare **Image Resizing** (`/cdn-cgi/image/...`). Requires resizing enabled on your zone; see `apps/server/wrangler.toml` comment. Alchemy binds an empty default string so the key always exists.

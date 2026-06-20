@@ -101,6 +101,52 @@ API_BASE_URL=https://api.justhookups.dev
 GOOGLE_PLAY_SUBSCRIPTION_ID=your_subscription_id
 ```
 
+### Run By Environment (dart-define)
+
+The app uses compile-time defines:
+
+- `API_BASE_URL` for backend origin
+- `ENVIRONMENT` for environment mode (`development`, `preprod`, `production`)
+
+From repository root, use the ready-made scripts:
+
+```bash
+pnpm run flutter:dev
+pnpm run flutter:dev:android
+pnpm run flutter:preprod
+pnpm run flutter:prod
+```
+
+Build APKs:
+
+```bash
+pnpm run flutter:build:apk:preprod
+pnpm run flutter:build:apk:prod
+```
+
+Equivalent manual commands inside `apps/flutter_app`:
+
+```bash
+# Local development (web/iOS simulator)
+flutter run --dart-define=ENVIRONMENT=development --dart-define=API_BASE_URL=http://localhost:8787
+
+# Local development (Android emulator)
+flutter run --dart-define=ENVIRONMENT=development --dart-define=API_BASE_URL=http://10.0.2.2:8787
+
+# Preprod worker
+flutter run --dart-define=ENVIRONMENT=preprod --dart-define=API_BASE_URL=https://dating-site-api.thabangsoulo.workers.dev
+
+# Production
+flutter build apk --release --dart-define=ENVIRONMENT=production --dart-define=API_BASE_URL=https://api.justhookups.dev
+```
+
+### Local Debugging Notes
+
+- Android emulator cannot reach host `localhost`; use `10.0.2.2`.
+- Physical devices cannot use `localhost`; use your machine LAN IP.
+- For Flutter web, server `CORS_ORIGIN` must exactly match browser origin.
+- In debug logs, startup prints active `environment` and resolved `baseUrl`.
+
 ## Project Architecture
 
 The app follows **Clean Architecture** with **Domain-Driven Design**:
