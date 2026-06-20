@@ -35,6 +35,7 @@ const mediaBucket = await R2Bucket("media-bucket", {
 export const server = await Worker("server", {
     cwd: "../../apps/server",
     entrypoint: "src/index.ts",
+    adopt: true,
     compatibility: "node",
     env: {
         DATABASE_URL: requireEnv("DATABASE_URL"),
