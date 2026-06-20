@@ -23,9 +23,10 @@ function requireEnv(name: string): string {
     return value;
 }
 
-const app = await alchemy("JustHookUps");
+// Lowercase the application token here to guarantee valid lowercase resource naming cascades
+const app = await alchemy("justhookups");
 
-// Register the infrastructure bucket resource to the app landscape
+// Maintain lowercase names for the resources themselves
 const mediaBucket = R2Bucket("dating-site-media");
     
 export const server = await Worker("server", {
@@ -45,7 +46,6 @@ export const server = await Worker("server", {
         GOOGLE_PLAY_PACKAGE_NAME: process.env.GOOGLE_PLAY_PACKAGE_NAME ?? "com.neonebula.Justhookups",
         GOOGLE_PLAY_WEBHOOK_SECRET: process.env.GOOGLE_PLAY_WEBHOOK_SECRET ?? "",
     },
-    // Bind using the pointer reference string instead of passing the raw object literal
     bindings: {
         MEDIA_BUCKET: "bucket:dating-site-media",
     },
