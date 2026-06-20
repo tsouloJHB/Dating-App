@@ -2,7 +2,6 @@
 process.env.ALCHEMY_CI_STATE_STORE_CHECK = "false";
 
 import alchemy from "alchemy";
-// Add R2Bucket to the cloudflare imports right here
 import { Worker, R2Bucket } from "alchemy/cloudflare"; 
 import { config } from "dotenv";
 import path from "node:path";
@@ -27,11 +26,6 @@ function requireEnv(name: string): string {
 }
 
 const app = await alchemy("JustHookUps");
-
-// Now properly instantiated via the imported factory function
-const mediaBucket = R2Bucket("media", {
-    name: "dating-site-media",
-});
     
 export const server = await Worker("server", {
     cwd: "../../apps/server",
@@ -51,7 +45,8 @@ export const server = await Worker("server", {
         GOOGLE_PLAY_WEBHOOK_SECRET: process.env.GOOGLE_PLAY_WEBHOOK_SECRET ?? "",
     },
     bindings: {
-        MEDIA_BUCKET: mediaBucket,
+        // Evaluate directly inside the binding assignment scope to break active tracking linkage
+        MEDIA_BUCKET: R2Bucket("media", { name: "dating-site-media" }),
     },
     dev: {
         port: 3000,
