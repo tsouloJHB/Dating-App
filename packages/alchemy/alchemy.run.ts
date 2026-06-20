@@ -26,10 +26,11 @@ function requireEnv(name: string): string {
 // Lowercase the application token here to guarantee valid lowercase resource naming cascades
 const app = await alchemy("justhookups");
 
-// Maintain lowercase names for the resources themselves
-// Register the infrastructure bucket resource, explicitly adopting it if it exists
-// Increment the name slightly to bypass the 409 conflict completely
-const mediaBucket = R2Bucket("dating-site-assets");
+// Register the existing R2 bucket by exact name and adopt it instead of creating a new one.
+await R2Bucket("media-bucket", {
+        name: "dating-site-assets",
+        adopt: true,
+});
     
 export const server = await Worker("server", {
     cwd: "../../apps/server",
