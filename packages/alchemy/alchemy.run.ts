@@ -20,7 +20,8 @@ const app = await alchemy("JustHookUps");
 
 const mediaBucket = await R2Bucket("media", {
     name: "dating-site-media",
-    id: "dating-site-media", // Ensure this matches the exact name of the existing bucket
+    id: "dating-site-media",
+    onConflict: "attach", // Forces Alchemy to bind instead of throwing on 409
 });
 	
 export const server = await Worker("server", {
