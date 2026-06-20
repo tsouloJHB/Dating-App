@@ -27,9 +27,9 @@ function requireEnv(name: string): string {
 const app = await alchemy("justhookups");
 
 // Register the existing R2 bucket by exact name and adopt it instead of creating a new one.
-await R2Bucket("media-bucket", {
-        name: "dating-site-assets",
-        adopt: true,
+const mediaBucket = await R2Bucket("media-bucket", {
+    name: "dating-site-assets",
+    adopt: true,
 });
     
 export const server = await Worker("server", {
@@ -50,7 +50,7 @@ export const server = await Worker("server", {
         GOOGLE_PLAY_WEBHOOK_SECRET: process.env.GOOGLE_PLAY_WEBHOOK_SECRET ?? "",
     },
     bindings: {
-        MEDIA_BUCKET: "bucket:dating-site-assets",
+        MEDIA_BUCKET: mediaBucket,
     },
     dev: {
         port: 3000,
