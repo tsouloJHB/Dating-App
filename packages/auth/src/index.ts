@@ -35,6 +35,11 @@ export function createAuth() {
 	};
 	const googleClientId = workerEnv.GOOGLE_CLIENT_ID?.trim() ?? "";
 	const googleClientSecret = workerEnv.GOOGLE_CLIENT_SECRET?.trim() ?? "";
+	if ((googleClientId.length > 0) !== (googleClientSecret.length > 0)) {
+		throw new Error(
+			"Google OAuth is misconfigured: set both GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET, or leave both unset.",
+		);
+	}
 	const googleOAuth =
 		googleClientId.length > 0 && googleClientSecret.length > 0
 			? {
