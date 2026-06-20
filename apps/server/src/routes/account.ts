@@ -58,6 +58,7 @@ async function getAuthenticatedUserId(c: Context) {
 	const authResponse = await fetch(`${origin}/api/auth/get-session`, {
 		method: "GET",
 		headers: {
+			origin: c.req.header("origin") ?? origin,
 			cookie: c.req.header("cookie") ?? "",
 			authorization: c.req.header("authorization") ?? "",
 		},

@@ -63,7 +63,6 @@ class AuthDataSourceImpl implements AuthDataSource {
         endpoint: ApiConstants.authSignUp,
       );
 
-      await _persistAuthFromResponse(response);
       await _completeSignupProfile(
         gender: gender,
         sexualOrientation: sexualOrientation,
@@ -95,6 +94,9 @@ class AuthDataSourceImpl implements AuthDataSource {
     String? accessToken,
   }) async {
     try {
+      if (kDebugMode) {
+        debugPrint('[AuthDataSource] signInWithGoogle starting...');
+      }
       final response = await dio.post<dynamic>(
         ApiConstants.authSignInSocial,
         data: {
@@ -105,12 +107,14 @@ class AuthDataSourceImpl implements AuthDataSource {
           },
         },
       );
+      if (kDebugMode) {
+        debugPrint('[AuthDataSource] signInWithGoogle response status: ${response.statusCode}');
+      }
       _asAuthResponseMapOrThrow(
         response,
         endpoint: ApiConstants.authSignInSocial,
       );
 
-      await _persistAuthFromResponse(response);
       final responseUser = _extractUserFromAuthResponse(response.data);
       if (responseUser != null) {
         return responseUser;
@@ -162,7 +166,6 @@ class AuthDataSourceImpl implements AuthDataSource {
         endpoint: ApiConstants.authSignIn,
       );
 
-      await _persistAuthFromResponse(response);
       final responseUser = _extractUserFromAuthResponse(payload);
       if (responseUser != null) {
         return responseUser;
@@ -247,72 +250,6 @@ class AuthDataSourceImpl implements AuthDataSource {
     );
   }
 
-  Future<void> _persistAuthFromResponse(Response<dynamic> response) async {
-    final headerToken = _readSetAuthToken(response);
-    final data = response.data;
-    
-    // For Better Auth: check all possible token locations across response formats
-    final bodyToken = data == null
-        ? null
-        : _firstString([
-            // Direct token fields
-            data['token'],
-            data['accessToken'],
-            data['bearerToken'],
-            // Nested session token (standard Better Auth)
-            (data['session'] as Map<String, dynamic>?)?['token'],
-            // Nested user.token (some Better Auth variants)
-            (data['user'] as Map<String, dynamic>?)?['token'],
-            // Raw response might be wrapped
-            (data as Map<String, dynamic>?)?['data'] is Map
-                ? ((data as Map<String, dynamic>)['data'] as Map<String, dynamic>?)?['token']
-                : null,
-          ]);
-
-    final token = (headerToken != null && headerToken.isNotEmpty)
-        ? headerToken
-        : bodyToken;
-
-    if (token == null || token.isEmpty) {
-      if (kDebugMode) {
-        debugPrint(
-          '[Auth] Warning: no token found in response. '
-          'Headers: ${response.headers}. '
-          'Body keys: ${data is Map ? (data as Map<String, dynamic>).keys : "not a map"}.'
-        );
-      }
-      return;
-    }
-
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('auth_token', token);
-    if (kDebugMode) {
-      debugPrint('[Auth] Token persisted from response');
-    }
-  }
-
-  String? _readSetAuthToken(Response response) {
-    final headers = response.headers;
-    final direct = headers.value('set-auth-token');
-    if (direct != null && direct.isNotEmpty) {
-      return direct;
-    }
-    for (final e in headers.map.entries) {
-      if (e.key.toLowerCase() == 'set-auth-token' && e.value.isNotEmpty) {
-        return e.value.first;
-      }
-    }
-    return null;
-  }
-
-  String? _firstString(List<dynamic?> values) {
-    for (final v in values) {
-      if (v is String && v.isNotEmpty) {
-        return v;
-      }
-    }
-    return null;
-  }
 
   User? _extractUserFromAuthResponse(Map<String, dynamic>? data) {
     if (data == null) {
