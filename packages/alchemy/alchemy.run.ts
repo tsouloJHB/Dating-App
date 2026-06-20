@@ -18,11 +18,13 @@ function binding<T>(value: T | undefined | null, name: string): T {
 const app = await alchemy("JustHookUps");
 
 
-const mediaBucket = await R2Bucket("media", {
+// Replace the standard instantiation with the external reference method
+// Bypass the Alchemy wrapper function completely
+const mediaBucket = {
+    __brand: "R2Bucket",
+    id: "media",
     name: "dating-site-media",
-    id: "dating-site-media",
-    onConflict: "attach", // Forces Alchemy to bind instead of throwing on 409
-});
+};
 	
 export const server = await Worker("server", {
     cwd: "../../apps/server",
