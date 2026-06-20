@@ -2,7 +2,8 @@
 process.env.ALCHEMY_CI_STATE_STORE_CHECK = "false";
 
 import alchemy from "alchemy";
-import { Worker } from "alchemy/cloudflare";
+// Add R2Bucket to the cloudflare imports right here
+import { Worker, R2Bucket } from "alchemy/cloudflare"; 
 import { config } from "dotenv";
 import path from "node:path";
 
@@ -17,7 +18,6 @@ console.log(Object.keys(process.env).filter(key => !key.startsWith("npm_")));
 console.log("----------------------------------");
 
 function requireEnv(name: string): string {
-    // Try standard name, then look for common platform prefixes like CLOUDFLARE_ or PAGES_
     const value = process.env[name] || process.env[`PLATFORM_${name}`] || process.env[`WORKER_${name}`];
     
     if (!value) {
@@ -28,17 +28,15 @@ function requireEnv(name: string): string {
 
 const app = await alchemy("JustHookUps");
 
-const mediaBucket = {
-    __brand: "R2Bucket",
-    id: "media",
+// Now properly instantiated via the imported factory function
+const mediaBucket = R2Bucket("media", {
     name: "dating-site-media",
-};
+});
     
 export const server = await Worker("server", {
     cwd: "../../apps/server",
     entrypoint: "src/index.ts",
     compatibility: "node",
-    // 1. All text configurations, tokens, URLs, and string values go here
     env: {
         DATABASE_URL: requireEnv("DATABASE_URL"),
         CORS_ORIGIN: requireEnv("CORS_ORIGIN"),
@@ -52,7 +50,6 @@ export const server = await Worker("server", {
         GOOGLE_PLAY_PACKAGE_NAME: process.env.GOOGLE_PLAY_PACKAGE_NAME ?? "com.neonebula.Justhookups",
         GOOGLE_PLAY_WEBHOOK_SECRET: process.env.GOOGLE_PLAY_WEBHOOK_SECRET ?? "",
     },
-    // 2. ONLY native infrastructure resource objects go here
     bindings: {
         MEDIA_BUCKET: mediaBucket,
     },
