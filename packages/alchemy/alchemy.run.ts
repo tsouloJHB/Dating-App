@@ -6,13 +6,20 @@ import { Worker } from "alchemy/cloudflare";
 import { config } from "dotenv";
 import path from "node:path";
 
-// Populate process.env using absolute path resolution
-config({ path: path.resolve(process.cwd(), "./.env") });
+// Attempting fallback overrides from common workspace root contexts
+config({ path: path.resolve(process.cwd(), ".env") });
+config({ path: path.resolve(process.cwd(), "../../.env") });
 config({ path: path.resolve(process.cwd(), "../../apps/server/.env") });
 
-// Explicit helper to safeguard missing variables
+// Log exactly what the script can read right now to debug the environment
+console.log("--- Available Environment Keys ---");
+console.log(Object.keys(process.env).filter(key => !key.startsWith("npm_")));
+console.log("----------------------------------");
+
 function requireEnv(name: string): string {
-    const value = process.env[name];
+    // Try standard name, then look for common platform prefixes like CLOUDFLARE_ or PAGES_
+    const value = process.env[name] || process.env[`PLATFORM_${name}`] || process.env[`WORKER_${name}`];
+    
     if (!value) {
         throw new Error(`Missing mandatory deployment environment variable: ${name}`);
     }
@@ -32,7 +39,6 @@ export const server = await Worker("server", {
     entrypoint: "src/index.ts",
     compatibility: "node",
     bindings: {
-        // Bypass alchemy.secret.env completely to avoid uncatchable runtime proxy crashes
         DATABASE_URL: requireEnv("DATABASE_URL"),
         CORS_ORIGIN: requireEnv("CORS_ORIGIN"),
         BETTER_AUTH_SECRET: requireEnv("BETTER_AUTH_SECRET"),
