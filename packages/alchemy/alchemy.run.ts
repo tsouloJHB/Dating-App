@@ -29,7 +29,7 @@ const app = await alchemy("justhookups");
 // Maintain lowercase names for the resources themselves
 // Register the infrastructure bucket resource, explicitly adopting it if it exists
 // Increment the name slightly to bypass the 409 conflict completely
-const mediaBucket = R2Bucket("dating-site-storage");
+const mediaBucket = R2Bucket("dating-site-assets");
     
 export const server = await Worker("server", {
     cwd: "../../apps/server",
@@ -49,7 +49,7 @@ export const server = await Worker("server", {
         GOOGLE_PLAY_WEBHOOK_SECRET: process.env.GOOGLE_PLAY_WEBHOOK_SECRET ?? "",
     },
     bindings: {
-        MEDIA_BUCKET: "bucket:dating-site-storage",
+        MEDIA_BUCKET: "bucket:dating-site-assets",
     },
     dev: {
         port: 3000,
