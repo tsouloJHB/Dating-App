@@ -39,19 +39,19 @@ export const server = await Worker("server", {
     entrypoint: "src/index.ts",
     compatibility: "node",
     bindings: {
-        DATABASE_URL: requireEnv("DATABASE_URL"),
-        CORS_ORIGIN: requireEnv("CORS_ORIGIN"),
-        BETTER_AUTH_SECRET: requireEnv("BETTER_AUTH_SECRET"),
-        BETTER_AUTH_URL: requireEnv("BETTER_AUTH_URL"),
-        
-        GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID ?? "",
-        GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET ?? "",
-        MEDIA_BUCKET: mediaBucket,
-        MEDIA_LIST_THUMB_WIDTH: "",
-        GOOGLE_PLAY_SERVICE_ACCOUNT_JSON: process.env.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON ?? "",
-        GOOGLE_PLAY_PACKAGE_NAME: process.env.GOOGLE_PLAY_PACKAGE_NAME ?? "com.neonebula.Justhookups",
-        GOOGLE_PLAY_WEBHOOK_SECRET: process.env.GOOGLE_PLAY_WEBHOOK_SECRET ?? "",
-    },
+    DATABASE_URL: requireEnv("DATABASE_URL"),
+    CORS_ORIGIN: requireEnv("CORS_ORIGIN"),
+    BETTER_AUTH_SECRET: requireEnv("BETTER_AUTH_SECRET"),
+    BETTER_AUTH_URL: requireEnv("BETTER_AUTH_URL"),
+    
+    GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID ?? "",
+    GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET ?? "",
+    MEDIA_BUCKET: mediaBucket,
+    MEDIA_LIST_THUMB_WIDTH: "", // <--- THIS IS THE PROBLEM
+    GOOGLE_PLAY_SERVICE_ACCOUNT_JSON: process.env.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON ?? "",
+    GOOGLE_PLAY_PACKAGE_NAME: process.env.GOOGLE_PLAY_PACKAGE_NAME ?? "com.neonebula.Justhookups",
+    GOOGLE_PLAY_WEBHOOK_SECRET: process.env.GOOGLE_PLAY_WEBHOOK_SECRET ?? "",
+},
     dev: {
         port: 3000,
     },
