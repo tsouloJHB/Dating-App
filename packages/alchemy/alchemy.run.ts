@@ -17,10 +17,12 @@ function binding<T>(value: T | undefined | null, name: string): T {
 
 const app = await alchemy("JustHookUps");
 
-const mediaBucket = await R2Bucket("media", {
-    name: "justhookups-media",
-});
 
+const mediaBucket = await R2Bucket("media", {
+    name: "dating-site-media",
+    id: "dating-site-media", // Tells Alchemy to attach to your existing bucket
+});
+	
 export const server = await Worker("server", {
     cwd: "../../apps/server",
     entrypoint: "src/index.ts",
