@@ -2,7 +2,7 @@
 process.env.ALCHEMY_CI_STATE_STORE_CHECK = "false";
 
 import alchemy from "alchemy";
-import { Worker, R2Bucket } from "alchemy/cloudflare"; 
+import { Worker } from "alchemy/cloudflare"; 
 import { config } from "dotenv";
 import path from "node:path";
 
@@ -45,8 +45,11 @@ export const server = await Worker("server", {
         GOOGLE_PLAY_WEBHOOK_SECRET: process.env.GOOGLE_PLAY_WEBHOOK_SECRET ?? "",
     },
     bindings: {
-        // Evaluate directly inside the binding assignment scope to break active tracking linkage
-        MEDIA_BUCKET: R2Bucket("media", { name: "dating-site-media" }),
+        // Use standard data descriptor object to bypass active execution loops
+        MEDIA_BUCKET: {
+            type: "r2",
+            name: "dating-site-media",
+        },
     },
     dev: {
         port: 3000,
