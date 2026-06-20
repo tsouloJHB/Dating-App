@@ -2,23 +2,21 @@
 process.env.ALCHEMY_CI_STATE_STORE_CHECK = "false";
 
 import alchemy from "alchemy";
-import { Worker } from "alchemy/cloudflare"; 
+import { Worker, R2Bucket } from "alchemy/cloudflare"; 
 import { config } from "dotenv";
 import path from "node:path";
 
-// Attempting fallback overrides from common workspace root contexts
+// Fallback environment overrides
 config({ path: path.resolve(process.cwd(), ".env") });
 config({ path: path.resolve(process.cwd(), "../../.env") });
 config({ path: path.resolve(process.cwd(), "../../apps/server/.env") });
 
-// Log exactly what the script can read right now to debug the environment
 console.log("--- Available Environment Keys ---");
 console.log(Object.keys(process.env).filter(key => !key.startsWith("npm_")));
 console.log("----------------------------------");
 
 function requireEnv(name: string): string {
     const value = process.env[name] || process.env[`PLATFORM_${name}`] || process.env[`WORKER_${name}`];
-    
     if (!value) {
         throw new Error(`Missing mandatory deployment environment variable: ${name}`);
     }
@@ -26,6 +24,9 @@ function requireEnv(name: string): string {
 }
 
 const app = await alchemy("JustHookUps");
+
+// Declare the infrastructure resource token cleanly at the top-level
+const mediaBucket = R2Bucket("dating-site-media");
     
 export const server = await Worker("server", {
     cwd: "../../apps/server",
@@ -45,11 +46,8 @@ export const server = await Worker("server", {
         GOOGLE_PLAY_WEBHOOK_SECRET: process.env.GOOGLE_PLAY_WEBHOOK_SECRET ?? "",
     },
     bindings: {
-        // Use standard data descriptor object to bypass active execution loops
-        MEDIA_BUCKET: {
-            type: "r2",
-            name: "dating-site-media",
-        },
+        // Pass the static reference token directly to the bindings map
+        MEDIA_BUCKET: mediaBucket,
     },
     dev: {
         port: 3000,
