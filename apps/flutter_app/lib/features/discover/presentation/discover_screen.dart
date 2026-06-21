@@ -32,12 +32,9 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
   }
 
   Future<void> _bootstrapDiscover() async {
-    if (!mounted) return; // Exit early if widget was disposed
-    
     if (!_filtersInitialized) {
       try {
         final profile = await ref.read(userProfileProvider.future);
-        if (!mounted) return; // Check again after async operation
         ref.read(discoverStateProvider.notifier).updateFilters(
               distanceKm: profile.discoveryRadius,
               minAge: profile.minAgeRange,
@@ -46,20 +43,16 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
         _filtersInitialized = true;
       } catch (_) {
         // Keep default discover filters if profile bootstrap fails.
-        if (!mounted) return;
       }
     }
 
-    if (!mounted) return;
     await ref.read(discoverLocationProvider.notifier).refresh(syncToBackend: true);
-    if (!mounted) return;
     final locationState = ref.read(discoverLocationProvider);
     ref.read(discoverStateProvider.notifier).updateLocation(
           latitude: locationState.latitude,
           longitude: locationState.longitude,
         );
 
-    if (!mounted) return;
     await _loadProfiles();
   }
 

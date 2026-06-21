@@ -1,8 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:dio_cookie_manager/dio_cookie_manager.dart';
-import 'package:cookie_jar/cookie_jar.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../constants/api_constants.dart';
 import 'api_exception.dart';
@@ -12,6 +10,8 @@ class DioClient {
   static final Dio _dio = Dio();
 
   static Future<Dio> initialize() async {
+    final prefs = await SharedPreferences.getInstance();
+
     _dio.options.baseUrl = ApiConstants.baseUrl;
     if (kDebugMode) {
       final source = ApiConstants.hasApiBaseUrlOverride
@@ -29,21 +29,11 @@ class DioClient {
     _dio.options.connectTimeout = HttpConfig.connectionTimeout;
     _dio.options.receiveTimeout = HttpConfig.receiveTimeout;
     _dio.options.contentType = 'application/json';
-    
-    // Setup cookie jar for session management (Better Auth uses httpOnly session cookies)
-    // This replaces manual Bearer token handling - cookies are automatically managed
-    final appDocDir = await getApplicationDocumentsDirectory();
-    final cookieJar = PersistCookieJar(storage: FileStorage('${appDocDir.path}/cookies'));
-    
+
     _dio.interceptors
       ..clear()
-      ..add(MobileOriginInterceptor())
-      ..add(CookieManager(cookieJar))
+      ..add(AuthInterceptor(prefs))
       ..add(ErrorInterceptor());
-
-    if (kDebugMode) {
-      debugPrint('[DioClient] ✓ Initialized with session cookie management (Better Auth compatible)');
-    }
 
     return _dio;
   }
@@ -51,15 +41,40 @@ class DioClient {
   static Dio getInstance() => _dio;
 }
 
-class MobileOriginInterceptor extends Interceptor {
+bool _shouldClearTokenOn401(String path) {
+  final p = path.toLowerCase();
+  if (p.contains('sign-in') || p.contains('sign-up')) {
+    return false;
+  }
+  return true;
+}
+
+class AuthInterceptor extends Interceptor {
+  AuthInterceptor(this.prefs);
+
+  final SharedPreferences prefs;
+
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    // Better Auth expects an Origin on certain auth routes.
-    // dart:io clients (Flutter mobile) usually omit it, so set a stable value.
-    if (!kIsWeb && options.headers['Origin'] == null) {
-      options.headers['Origin'] = ApiConstants.baseUrl;
+    final token = prefs.getString('auth_token');
+    if (token != null && token.isNotEmpty) {
+      options.headers['Authorization'] = 'Bearer $token';
     }
     handler.next(options);
+  }
+
+  @override
+  Future<void> onError(
+    DioException err,
+    ErrorInterceptorHandler handler,
+  ) async {
+    final code = err.response?.statusCode;
+    if (code == 401 &&
+        _shouldClearTokenOn401(err.requestOptions.path)) {
+      await prefs.remove('auth_token');
+      AuthSessionBridge.instance.notifySessionExpired();
+    }
+    handler.next(err);
   }
 }
 
@@ -69,14 +84,6 @@ class ErrorInterceptor extends Interceptor {
     final api = err.error is ApiException
         ? err.error as ApiException
         : ApiException.fromDio(err);
-
-    // Handle 401 by notifying session expiration (cookies will be cleared by cookie jar)
-    if (err.response?.statusCode == 401) {
-      if (kDebugMode) {
-        debugPrint('[ErrorInterceptor] 401 Unauthorized - session expired');
-      }
-      AuthSessionBridge.instance.notifySessionExpired();
-    }
 
     if (kDebugMode) {
       debugPrint('[Dio] ${api.kind} ${api.statusCode ?? ''}: ${api.message}');
