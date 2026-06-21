@@ -105,13 +105,7 @@ class ErrorInterceptor extends Interceptor {
       if (kDebugMode) {
         debugPrint('[ErrorInterceptor] 401 Unauthorized on ${err.requestOptions.path}');
       }
-      // Sign-in / sign-up / social-auth paths legitimately return 401 for
-      // wrong credentials — don't treat those as session expiry.
-      final isCredentialError = path.contains('/api/auth/sign-in') ||
-          path.contains('/api/auth/sign-up') ||
-          path.contains('/api/auth/callback') ||
-          path.contains('/api/auth/social');
-      if (!isCredentialError) {
+      if (path.contains('/api/auth/get-session')) {
         AuthSessionBridge.instance.notifySessionExpired();
       }
     }

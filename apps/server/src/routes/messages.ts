@@ -1,15 +1,55 @@
 import { sql } from "drizzle-orm";
-import { Hono } from "hono";
+import { Hono, type Context } from "hono";
 import { z } from "zod";
 
 import { createDb } from "@JustHookUps/db";
 
 import { LIST_PAGE_SIZE } from "../constants";
-import { getAuthenticatedUserId } from "../lib/get-user-id";
 import { expirePremiumIfNeeded } from "../lib/subscription";
 
 /** S4 — chat threads, history, and send (with match-gate for FREE tier). */
 export const messages = new Hono();
+
+type AuthSession = {
+	user?: { id?: string };
+	session?: { user?: { id?: string } };
+};
+
+async function getAuthenticatedUserId(c: Context) {
+	const origin = new URL(c.req.url).origin;
+	const authHeader = c.req.header("authorization") ?? "";
+	const authResponse = await fetch(`${origin}/api/auth/get-session`, {
+		method: "GET",
+		headers: {
+			origin: c.req.header("origin") ?? origin,
+			cookie: c.req.header("cookie") ?? "",
+			authorization: authHeader,
+		},
+	});
+	if (!authResponse.ok) {
+		const bearer = authHeader.toLowerCase().startsWith("bearer ")
+			? authHeader.slice(7).trim()
+			: "";
+		if (!bearer) return null;
+		const db = createDb();
+		const rows = await db.execute(sql`
+			select user_id as "userId"
+			from session
+			where token = ${bearer}
+				and expires_at > now()
+			limit 1
+		`);
+		const userId = (rows.rows[0] as Record<string, unknown> | undefined)?.userId;
+		return typeof userId === "string" && userId.length > 0 ? userId : null;
+	}
+	const rawPayload = await authResponse.json().catch(() => null);
+	const payload =
+		rawPayload && typeof rawPayload === "object"
+			? (rawPayload as AuthSession)
+			: null;
+	const userId = payload?.user?.id ?? payload?.session?.user?.id;
+	return typeof userId === "string" && userId.length > 0 ? userId : null;
+}
 
 // ── GET /threads ──────────────────────────────────────────────────────────────
 // Returns one entry per unique conversation partner, last message snippet +
