@@ -1,4 +1,4 @@
-package com.example.justhookups
+package casual.meets
 
 import io.flutter.embedding.android.FlutterActivity
 

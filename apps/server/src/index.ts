@@ -10,6 +10,7 @@ import { billing } from "./routes/billing";
 import { discover } from "./routes/discover";
 import { inbox } from "./routes/inbox";
 import { interactions } from "./routes/interactions";
+import { legal } from "./routes/legal";
 import { matches } from "./routes/matches";
 import { media } from "./routes/media";
 import { messages } from "./routes/messages";
@@ -165,5 +166,6 @@ app.route("/api/media", media);
 app.route("/api/billing", billing);
 app.route("/api/account", account);
 app.route("/api/users", users);
+app.route("/", legal);
 
 export default app;

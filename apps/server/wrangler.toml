@@ -14,6 +14,15 @@ cwd = "."
 CORS_ORIGIN = "http://localhost:8787"
 BETTER_AUTH_URL = "http://localhost:8787"
 
+[env.preprod]
+[env.preprod.vars]
+CORS_ORIGIN = "https://dating-site-api.thabangsoulo.workers.dev"
+BETTER_AUTH_URL = "https://dating-site-api.thabangsoulo.workers.dev"
+
+[env.preprod.r2_buckets]
+binding = "MEDIA_BUCKET"
+bucket_name = "justhookups-media"
+
 # Secrets (set via `wrangler secret put …` or Alchemy):
 # DATABASE_URL, BETTER_AUTH_SECRET
 
