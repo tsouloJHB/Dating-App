@@ -30,6 +30,11 @@ app.onError((err, c) => {
 		}
 		return c.json({ error: message }, status);
 	}
+	// Log the cause (e.g. the real Postgres error behind a Drizzle "Failed query")
+	const cause = (err as { cause?: unknown }).cause;
+	if (cause) {
+		console.error("Caused by:", cause);
+	}
 	console.error(err);
 	return c.json({ error: "Internal Server Error" }, 500);
 });
