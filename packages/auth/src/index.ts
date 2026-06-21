@@ -69,6 +69,10 @@ export function createAuth() {
 		//     maxAge: 60,
 		//   },
 		// },
+		session: {
+			expiresIn: 60 * 60 * 24 * 30,       // 30-day session lifetime
+			updateAge: 60 * 60 * 24,             // extend when active in the last 24 h
+		},
 		secret: env.BETTER_AUTH_SECRET,
 		baseURL: env.BETTER_AUTH_URL,
 		advanced: {

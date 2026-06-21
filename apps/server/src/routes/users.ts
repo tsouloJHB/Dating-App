@@ -1,46 +1,12 @@
-import { Hono, type Context } from "hono";
+import { Hono } from "hono";
 import { z } from "zod";
 import { sql } from "drizzle-orm";
 
 import { createDb } from "@JustHookUps/db";
 
+import { getAuthenticatedUserId } from "../lib/get-user-id";
 import { buildPhotoPayload, getListThumbWidth } from "../lib/photo-payload";
 import { resolveViewerPremium } from "../lib/subscription";
-
-type AuthSession = {
-	user?: {
-		id?: string;
-	};
-	session?: {
-		user?: {
-			id?: string;
-		};
-	};
-};
-
-async function getAuthenticatedUserId(c: Context) {
-	const origin = new URL(c.req.url).origin;
-	const authResponse = await fetch(`${origin}/api/auth/get-session`, {
-		method: "GET",
-		headers: {
-			origin: c.req.header("origin") ?? origin,
-			cookie: c.req.header("cookie") ?? "",
-			authorization: c.req.header("authorization") ?? "",
-		},
-	});
-
-	if (!authResponse.ok) {
-		return null;
-	}
-
-	const rawPayload = await authResponse.json().catch(() => null);
-	const authPayload =
-		rawPayload && typeof rawPayload === "object"
-			? (rawPayload as AuthSession)
-			: null;
-	const userId = authPayload?.user?.id ?? authPayload?.session?.user?.id;
-	return typeof userId === "string" && userId.length > 0 ? userId : null;
-}
 
 /** User endpoints — profile views, public profile detail (S3). */
 export const users = new Hono();

@@ -1,37 +1,13 @@
-import { Hono, type Context } from "hono";
+import { Hono } from "hono";
 import { z } from "zod";
 
 import { createDb } from "@JustHookUps/db";
 import { sql } from "drizzle-orm";
 
 import { LIST_PAGE_SIZE } from "../constants";
+import { getAuthenticatedUserId as getSessionUserId } from "../lib/get-user-id";
 import { buildPhotoPayload, getListThumbWidth } from "../lib/photo-payload";
 import { resolveViewerPremium } from "../lib/subscription";
-
-type AuthSession = {
-	user?: { id?: string };
-	session?: { user?: { id?: string } };
-};
-
-async function getSessionUserId(c: Context): Promise<string | null> {
-	const origin = new URL(c.req.url).origin;
-	try {
-		const res = await fetch(`${origin}/api/auth/get-session`, {
-			method: "GET",
-			headers: {
-				origin: c.req.header("origin") ?? origin,
-				cookie: c.req.header("cookie") ?? "",
-				authorization: c.req.header("authorization") ?? "",
-			},
-		});
-		if (!res.ok) return null;
-		const payload = (await res.json().catch(() => null)) as AuthSession | null;
-		const id = payload?.user?.id ?? payload?.session?.user?.id;
-		return typeof id === "string" && id.length > 0 ? id : null;
-	} catch {
-		return null;
-	}
-}
 
 const discoverRequestSchema = z.object({
 	userId: z.string().optional(),
