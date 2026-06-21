@@ -24,11 +24,25 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
   final _picker = ImagePicker();
   Timer? _pollTimer;
 
+  bool _isUnauthorizedError(Object error) {
+    final normalized = error.toString().toLowerCase();
+    return normalized.contains('401') || normalized.contains('unauthorized');
+  }
+
   @override
   void initState() {
     super.initState();
     _pollTimer = Timer.periodic(const Duration(seconds: 3), (_) {
       if (!mounted) return;
+      final threadState = ref.read(messagesProvider(widget.threadId));
+      final unauthorized = threadState.maybeWhen(
+        error: (e, _) => _isUnauthorizedError(e),
+        orElse: () => false,
+      );
+      if (unauthorized) {
+        _pollTimer?.cancel();
+        return;
+      }
       ref.invalidate(messagesProvider(widget.threadId));
       ref.invalidate(messageThreadsProvider);
     });
