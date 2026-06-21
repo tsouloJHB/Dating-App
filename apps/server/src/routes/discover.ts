@@ -1,3 +1,4 @@
+import { createAuth } from "@JustHookUps/auth";
 import { Hono, type Context } from "hono";
 import { z } from "zod";
 
@@ -8,26 +9,11 @@ import { LIST_PAGE_SIZE } from "../constants";
 import { buildPhotoPayload, getListThumbWidth } from "../lib/photo-payload";
 import { resolveViewerPremium } from "../lib/subscription";
 
-type AuthSession = {
-	user?: { id?: string };
-	session?: { user?: { id?: string } };
-};
-
 async function getSessionUserId(c: Context): Promise<string | null> {
-	const origin = new URL(c.req.url).origin;
 	try {
-		const res = await fetch(`${origin}/api/auth/get-session`, {
-			method: "GET",
-			headers: {
-				origin: c.req.header("origin") ?? origin,
-				cookie: c.req.header("cookie") ?? "",
-				authorization: c.req.header("authorization") ?? "",
-			},
-		});
-		if (!res.ok) return null;
-		const payload = (await res.json().catch(() => null)) as AuthSession | null;
-		const id = payload?.user?.id ?? payload?.session?.user?.id;
-		return typeof id === "string" && id.length > 0 ? id : null;
+		const session = await createAuth().api.getSession({ headers: c.req.raw.headers });
+		const userId = session?.user?.id;
+		return typeof userId === "string" && userId.length > 0 ? userId : null;
 	} catch {
 		return null;
 	}
