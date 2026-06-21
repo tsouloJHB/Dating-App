@@ -37,7 +37,6 @@ class DioClient {
     
     _dio.interceptors
       ..clear()
-      ..add(MobileOriginInterceptor())
       ..add(CookieManager(cookieJar))
       ..add(ErrorInterceptor());
 
@@ -49,18 +48,6 @@ class DioClient {
   }
 
   static Dio getInstance() => _dio;
-}
-
-class MobileOriginInterceptor extends Interceptor {
-  @override
-  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    // Better Auth expects an Origin on certain auth routes.
-    // dart:io clients (Flutter mobile) usually omit it, so set a stable value.
-    if (!kIsWeb && options.headers['Origin'] == null) {
-      options.headers['Origin'] = ApiConstants.baseUrl;
-    }
-    handler.next(options);
-  }
 }
 
 class ErrorInterceptor extends Interceptor {
