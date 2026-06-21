@@ -88,15 +88,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   final AuthRepository repository;
 
-  Future<void> _onSessionExpiredFromInterceptor() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('auth_token');
-    if (mounted) {
-      state = const AuthState(
-        bootstrapPending: false,
-        isAuthenticated: false,
-      );
-    }
+  void _onSessionExpiredFromInterceptor() {
+    state = const AuthState(
+      bootstrapPending: false,
+      isAuthenticated: false,
+    );
   }
 
   Future<void> _bootstrap() async {

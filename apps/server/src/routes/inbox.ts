@@ -1,12 +1,60 @@
-import { Hono } from "hono";
+import { Hono, type Context } from "hono";
 import { sql } from "drizzle-orm";
 
 import { createDb } from "@JustHookUps/db";
 
 import { LIST_PAGE_SIZE } from "../constants";
-import { getAuthenticatedUserId } from "../lib/get-user-id";
 import { buildPhotoPayload, getListThumbWidth } from "../lib/photo-payload";
 import { resolveViewerPremium } from "../lib/subscription";
+
+type AuthSession = {
+	user?: {
+		id?: string;
+	};
+	session?: {
+		user?: {
+			id?: string;
+		};
+	};
+};
+
+async function getAuthenticatedUserId(c: Context) {
+	const origin = new URL(c.req.url).origin;
+	const authHeader = c.req.header("authorization") ?? "";
+	const authResponse = await fetch(`${origin}/api/auth/get-session`, {
+		method: "GET",
+		headers: {
+			origin: c.req.header("origin") ?? origin,
+			cookie: c.req.header("cookie") ?? "",
+			authorization: authHeader,
+		},
+	});
+
+	if (!authResponse.ok) {
+		const bearer = authHeader.toLowerCase().startsWith("bearer ")
+			? authHeader.slice(7).trim()
+			: "";
+		if (!bearer) return null;
+		const db = createDb();
+		const rows = await db.execute(sql`
+			select user_id as "userId"
+			from session
+			where token = ${bearer}
+				and expires_at > now()
+			limit 1
+		`);
+		const userId = (rows.rows[0] as Record<string, unknown> | undefined)?.userId;
+		return typeof userId === "string" && userId.length > 0 ? userId : null;
+	}
+
+	const rawPayload = await authResponse.json().catch(() => null);
+	const authPayload =
+		rawPayload && typeof rawPayload === "object"
+			? (rawPayload as AuthSession)
+			: null;
+	const userId = authPayload?.user?.id ?? authPayload?.session?.user?.id;
+	return typeof userId === "string" && userId.length > 0 ? userId : null;
+}
 
 /** S2 — Who liked me, visitors (tier-gated in API responses when implemented). */
 export const inbox = new Hono();
