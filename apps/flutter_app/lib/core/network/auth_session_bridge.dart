@@ -3,7 +3,7 @@ class AuthSessionBridge {
   AuthSessionBridge._();
   static final AuthSessionBridge instance = AuthSessionBridge._();
 
-  void Function()? onSessionExpired;
+  Future<void> Function()? onSessionExpired;
 
   void notifySessionExpired() {
     onSessionExpired?.call();

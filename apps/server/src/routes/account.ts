@@ -6,6 +6,8 @@ import { sql } from "drizzle-orm";
 import { Hono, type Context } from "hono";
 import { z } from "zod";
 
+import { getAuthenticatedUserId } from "../lib/get-user-id";
+
 /** S5 — hide (soft) / delete (cascade purge per AGENTS §5). */
 export const account = new Hono();
 
@@ -27,17 +29,6 @@ const userPatchSchema = z.object({
 	image: z.union([z.string().url(), z.literal("")]).optional(),
 });
 
-type AuthSession = {
-	user?: {
-		id?: string;
-	};
-	session?: {
-		user?: {
-			id?: string;
-		};
-	};
-};
-
 function normalizeGenderValue(value: string | undefined) {
 	if (!value) return value;
 	const normalized = value.trim().toLowerCase();
@@ -51,44 +42,6 @@ function normalizePreferenceValue(value: string | undefined) {
 	const normalized = value.trim().toLowerCase();
 	if (normalized === "bisexual") return "bi";
 	return value.trim();
-}
-
-async function getAuthenticatedUserId(c: Context) {
-	const origin = new URL(c.req.url).origin;
-	const authHeader = c.req.header("authorization") ?? "";
-	const authResponse = await fetch(`${origin}/api/auth/get-session`, {
-		method: "GET",
-		headers: {
-			origin: c.req.header("origin") ?? origin,
-			cookie: c.req.header("cookie") ?? "",
-			authorization: authHeader,
-		},
-	});
-
-	if (!authResponse.ok) {
-		const bearer = authHeader.toLowerCase().startsWith("bearer ")
-			? authHeader.slice(7).trim()
-			: "";
-		if (!bearer) return null;
-		const db = createDb();
-		const rows = await db.execute(sql`
-			select user_id as "userId"
-			from session
-			where token = ${bearer}
-				and expires_at > now()
-			limit 1
-		`);
-		const userId = (rows.rows[0] as Record<string, unknown> | undefined)?.userId;
-		return typeof userId === "string" && userId.length > 0 ? userId : null;
-	}
-
-	const rawPayload = await authResponse.json().catch(() => null);
-	const authPayload =
-		rawPayload && typeof rawPayload === "object"
-			? (rawPayload as AuthSession)
-			: null;
-	const userId = authPayload?.user?.id ?? authPayload?.session?.user?.id;
-	return typeof userId === "string" && userId.length > 0 ? userId : null;
 }
 
 async function readProfileRow(db: ReturnType<typeof createDb>, userId: string) {
