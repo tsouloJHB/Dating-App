@@ -98,7 +98,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Welcome back to JustHookups',
+                          'Welcome back to CasualMeets',
                           style: AppTextStyles.bodyRegular(
                             color: textColor.withOpacity(0.55),
                             fontSize: 15,

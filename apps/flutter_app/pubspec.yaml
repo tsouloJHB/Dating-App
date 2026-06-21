@@ -21,9 +21,9 @@ dependencies:
   dio_cookie_manager: ^3.0.0
   cookie_jar: ^4.0.0
   
-  # Hardware/OS  
+  # Hardware/OS
   location: ^5.0.0
-  
+
   # Notifications
   flutter_local_notifications: ^17.0.0
   

@@ -232,7 +232,7 @@ class _GoogleProfileSetupScreenState extends ConsumerState<GoogleProfileSetupScr
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'A few details to finish setting up your JustHookups account.',
+                  'A few details to finish setting up your CasualMeets account.',
                   style: AppTextStyles.bodyRegular(
                     color: textColor.withOpacity(0.55),
                     fontSize: 14,

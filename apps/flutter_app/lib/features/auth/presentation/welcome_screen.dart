@@ -35,7 +35,7 @@ class WelcomeScreen extends ConsumerWidget {
                     const AppBrandLogo(size: 96, borderRadius: 24),
                     const SizedBox(height: 22),
                     Text(
-                      'JustHookups',
+                      'CasualMeets',
                       style: AppTextStyles.headerBold(color: textColor, fontSize: 34),
                     ),
                     const SizedBox(height: 8),

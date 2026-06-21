@@ -115,7 +115,7 @@ class NotificationServiceImpl implements NotificationService {
     const AndroidNotificationDetails androidDetails =
         AndroidNotificationDetails(
       'justhookups_channel',
-      'JustHookups Notifications',
+      'CasualMeets Notifications',
       importance: Importance.max,
       priority: Priority.high,
     );

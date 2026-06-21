@@ -115,6 +115,9 @@ class ApiConstants {
   // Billing Endpoints
   static const String billingSubscriptions = '/api/billing/subscriptions';
   static const String billingVerify = '/api/billing/verify';
+
+  // Legal Endpoints
+  static const String privacyPolicy = '/privacy-policy';
 }
 
 class HttpConfig {

@@ -212,3 +212,223 @@ legal.get("/privacy-policy/json", (c) => {
 		url: `${new URL(c.req.url).origin}/privacy-policy`,
 	});
 });
+
+const accountDeletionHTML = html`
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Request Account Deletion - CasualMeets</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+      width: 100%;
+      padding: 40px;
+    }
+    h1 {
+      color: #1a1a1a;
+      margin-bottom: 8px;
+      font-size: 28px;
+    }
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .form-group {
+      margin-bottom: 24px;
+    }
+    label {
+      display: block;
+      color: #333;
+      font-weight: 500;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+    input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      transition: border-color 0.2s;
+    }
+    input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    .helper-text {
+      color: #999;
+      font-size: 12px;
+      margin-top: 6px;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    }
+    button:active {
+      transform: translateY(0);
+    }
+    button:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+    .success-message {
+      display: none;
+      background: #d4edda;
+      color: #155724;
+      padding: 16px;
+      border-radius: 8px;
+      margin-top: 20px;
+      border: 1px solid #c3e6cb;
+    }
+    .success-message.show {
+      display: block;
+    }
+    .info-box {
+      background: #f0f7ff;
+      border-left: 4px solid #667eea;
+      padding: 16px;
+      border-radius: 6px;
+      margin-bottom: 24px;
+      font-size: 13px;
+      color: #333;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Request Account Deletion</h1>
+    <p class="subtitle">We're sorry to see you go. If you'd like to permanently delete your CasualMeets account and all associated data, please provide your email address or User ID below.</p>
+
+    <div class="info-box">
+      <strong>What happens when you delete your account?</strong><br>
+      • All your profile information, photos, and messages will be permanently deleted<br>
+      • Your account cannot be recovered after deletion<br>
+      • We will process your request within 30 days
+    </div>
+
+    <form id="deletionForm">
+      <div class="form-group">
+        <label for="identifier">Email Address or User ID</label>
+        <input
+          type="text"
+          id="identifier"
+          name="identifier"
+          placeholder="your.email@example.com or user-id"
+          required
+        >
+        <div class="helper-text">Enter the email address or User ID associated with your CasualMeets account</div>
+      </div>
+
+      <button type="submit">Request Account Deletion</button>
+
+      <div class="success-message" id="successMessage">
+        <strong>Request Received</strong><br>
+        Thank you for your deletion request. We will delete your account within 30 days. You will receive a confirmation email.
+      </div>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('deletionForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const identifier = document.getElementById('identifier').value.trim();
+      const button = e.target.querySelector('button[type="submit"]');
+
+      if (!identifier) {
+        alert('Please enter your email address or User ID');
+        return;
+      }
+
+      button.disabled = true;
+      button.textContent = 'Processing...';
+
+      try {
+        const response = await fetch('/api/account/deletion-request', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ identifier }),
+        });
+
+        if (response.ok) {
+          document.getElementById('deletionForm').style.display = 'none';
+          document.getElementById('successMessage').classList.add('show');
+        } else {
+          const error = await response.json().catch(() => ({ error: 'Request failed' }));
+          alert('Error: ' + (error.error || 'Failed to process your request'));
+          button.disabled = false;
+          button.textContent = 'Request Account Deletion';
+        }
+      } catch (error) {
+        alert('Error: ' + error.message);
+        button.disabled = false;
+        button.textContent = 'Request Account Deletion';
+      }
+    });
+  </script>
+</body>
+</html>
+`;
+
+legal.get("/account-deletion", (c) => {
+	return c.html(accountDeletionHTML);
+});
+
+legal.post("/api/account/deletion-request", async (c) => {
+	try {
+		const body = await c.req.json().catch(() => ({}));
+		const identifier = (body.identifier || '').trim();
+
+		if (!identifier) {
+			return c.json({ error: "Email address or User ID is required" }, 400);
+		}
+
+		// Log deletion request
+		console.log(
+			`[Account Deletion Request] Identifier: ${identifier}, IP: ${c.req.header("cf-connecting-ip") || "unknown"}`
+		);
+
+		return c.json({
+			success: true,
+			message: "Account deletion request received. We will process it within 30 days.",
+		});
+	} catch (error) {
+		console.error("[Account Deletion Request Error]", error);
+		return c.json({ error: "Failed to process deletion request" }, 500);
+	}
+});

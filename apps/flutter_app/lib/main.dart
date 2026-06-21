@@ -49,7 +49,7 @@ class _AppBootstrap extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final dioInit = ref.watch(dioProvider);
     return dioInit.when(
-      data: (_) => const JustHookupsApp(),
+      data: (_) => const CasualMeetsApp(),
       loading: () => MaterialApp(
         theme: AppTheme.lightTheme(),
         home: const Scaffold(
@@ -82,14 +82,14 @@ class _AppBootstrap extends ConsumerWidget {
   }
 }
 
-class JustHookupsApp extends ConsumerStatefulWidget {
-  const JustHookupsApp({super.key});
+class CasualMeetsApp extends ConsumerStatefulWidget {
+  const CasualMeetsApp({super.key});
 
   @override
-  ConsumerState<JustHookupsApp> createState() => _JustHookupsAppState();
+  ConsumerState<CasualMeetsApp> createState() => _CasualMeetsAppState();
 }
 
-class _JustHookupsAppState extends ConsumerState<JustHookupsApp> {
+class _CasualMeetsAppState extends ConsumerState<CasualMeetsApp> {
   late final GoRouter _router = GoRouter(
     initialLocation: '/',
     redirect: (context, state) {
@@ -199,7 +199,7 @@ class _JustHookupsAppState extends ConsumerState<JustHookupsApp> {
     });
 
     return MaterialApp.router(
-      title: 'JustHookups',
+      title: 'CasualMeets',
       theme: AppTheme.lightTheme(),
       darkTheme: AppTheme.darkTheme(),
       themeMode:
@@ -273,7 +273,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final wantsLocation = await _showPermissionRationale(
       title: 'Enable Location',
       message:
-          'JustHookups uses your location to show people nearby and power distance filters in Discover.',
+          'CasualMeets uses your location to show people nearby and power distance filters in Discover.',
       confirmLabel: 'Allow Location',
     );
 

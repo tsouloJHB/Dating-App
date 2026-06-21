@@ -83,8 +83,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }
 
   Future<void> _logout() async {
-    await ref.read(authStateProvider.notifier).logout();
-    // GoRouter redirect guard will push back to '/' automatically.
+    try {
+      await ref.read(authStateProvider.notifier).logout();
+      // GoRouter redirect guard will push back to '/' automatically.
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Logout failed: $e')),
+        );
+      }
+    }
   }
 
   Future<void> _hideAccount() async {
@@ -546,7 +554,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       label: 'Log out',
                       textColor: textColor,
                       iconColor: subColor,
-                      onTap: _logout,
+                      onTap: () async {
+                        // Show loading indicator
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Logging out...')),
+                          );
+                        }
+                        await _logout();
+                      },
                     ),
                     Divider(color: subColor.withOpacity(0.12), height: 1),
                     _AccountTile(

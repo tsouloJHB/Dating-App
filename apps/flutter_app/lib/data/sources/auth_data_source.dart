@@ -272,7 +272,7 @@ class AuthDataSourceImpl implements AuthDataSource {
     throw ApiException(
       message:
           'Server returned an unexpected response for $endpoint. '
-          'Check that API_BASE_URL points to the JustHookups API worker.',
+          'Check that API_BASE_URL points to the CasualMeets API worker.',
       statusCode: response.statusCode,
       kind: ApiErrorKind.server,
     );
