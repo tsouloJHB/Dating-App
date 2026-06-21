@@ -20,25 +20,11 @@ class ChatScreen extends ConsumerStatefulWidget {
 class _ChatScreenState extends ConsumerState<ChatScreen> {
   Timer? _pollTimer;
 
-  bool _isUnauthorizedError(Object error) {
-    final normalized = error.toString().toLowerCase();
-    return normalized.contains('401') || normalized.contains('unauthorized');
-  }
-
   @override
   void initState() {
     super.initState();
     _pollTimer = Timer.periodic(const Duration(seconds: 8), (_) {
       if (!mounted) return;
-      final current = ref.read(messageThreadsProvider);
-      final unauthorized = current.maybeWhen(
-        error: (e, _) => _isUnauthorizedError(e),
-        orElse: () => false,
-      );
-      if (unauthorized) {
-        _pollTimer?.cancel();
-        return;
-      }
       ref.invalidate(messageThreadsProvider);
     });
   }

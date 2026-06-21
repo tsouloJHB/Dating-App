@@ -3,7 +3,6 @@ import 'package:flutter/foundation.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../constants/api_constants.dart';
 import 'api_exception.dart';
@@ -13,8 +12,6 @@ class DioClient {
   static final Dio _dio = Dio();
 
   static Future<Dio> initialize() async {
-    final prefs = await SharedPreferences.getInstance();
-
     _dio.options.baseUrl = ApiConstants.baseUrl;
     if (kDebugMode) {
       final source = ApiConstants.hasApiBaseUrlOverride
@@ -41,7 +38,6 @@ class DioClient {
     _dio.interceptors
       ..clear()
       ..add(MobileOriginInterceptor())
-      ..add(BearerTokenInterceptor(prefs))
       ..add(CookieManager(cookieJar))
       ..add(ErrorInterceptor());
 
@@ -53,29 +49,6 @@ class DioClient {
   }
 
   static Dio getInstance() => _dio;
-}
-
-class BearerTokenInterceptor extends Interceptor {
-  BearerTokenInterceptor(this.prefs);
-
-  final SharedPreferences prefs;
-
-  @override
-  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    final token = prefs.getString('auth_token');
-    if (kDebugMode) {
-      debugPrint(
-        '[BearerTokenInterceptor] ${options.method} ${options.path} token=${token == null ? 'missing' : 'present(${token.length})'}',
-      );
-    }
-    if (token != null && token.isNotEmpty && options.headers['Authorization'] == null) {
-      options.headers['Authorization'] = 'Bearer $token';
-      if (kDebugMode) {
-        debugPrint('[BearerTokenInterceptor] Authorization header attached');
-      }
-    }
-    handler.next(options);
-  }
 }
 
 class MobileOriginInterceptor extends Interceptor {
@@ -97,17 +70,12 @@ class ErrorInterceptor extends Interceptor {
         ? err.error as ApiException
         : ApiException.fromDio(err);
 
-    final path = err.requestOptions.path.toLowerCase();
-
-    // Avoid force-logout on every protected endpoint 401.
-    // Only propagate session-expired signal for explicit session probe failures.
+    // Handle 401 by notifying session expiration (cookies will be cleared by cookie jar)
     if (err.response?.statusCode == 401) {
       if (kDebugMode) {
-        debugPrint('[ErrorInterceptor] 401 Unauthorized on ${err.requestOptions.path}');
+        debugPrint('[ErrorInterceptor] 401 Unauthorized - session expired');
       }
-      if (path.contains('/api/auth/get-session')) {
-        AuthSessionBridge.instance.notifySessionExpired();
-      }
+      AuthSessionBridge.instance.notifySessionExpired();
     }
 
     if (kDebugMode) {

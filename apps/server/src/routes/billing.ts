@@ -1,4 +1,4 @@
-import { eq, sql } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { Hono, type Context } from "hono";
 import { z } from "zod";
 
@@ -26,31 +26,15 @@ type AuthSession = {
 
 async function getAuthenticatedUserId(c: Context): Promise<string | null> {
 	const origin = new URL(c.req.url).origin;
-	const authHeader = c.req.header("authorization") ?? "";
 	const authResponse = await fetch(`${origin}/api/auth/get-session`, {
 		method: "GET",
 		headers: {
 			origin: c.req.header("origin") ?? origin,
 			cookie: c.req.header("cookie") ?? "",
-			authorization: authHeader,
+			authorization: c.req.header("authorization") ?? "",
 		},
 	});
-	if (!authResponse.ok) {
-		const bearer = authHeader.toLowerCase().startsWith("bearer ")
-			? authHeader.slice(7).trim()
-			: "";
-		if (!bearer) return null;
-		const db = createDb();
-		const rows = await db.execute(sql`
-			select user_id as "userId"
-			from session
-			where token = ${bearer}
-				and expires_at > now()
-			limit 1
-		`);
-		const userId = (rows.rows[0] as Record<string, unknown> | undefined)?.userId;
-		return typeof userId === "string" && userId.length > 0 ? userId : null;
-	}
+	if (!authResponse.ok) return null;
 	const rawPayload = await authResponse.json().catch(() => null);
 	const authPayload =
 		rawPayload && typeof rawPayload === "object"

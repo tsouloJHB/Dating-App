@@ -63,8 +63,6 @@ class AuthDataSourceImpl implements AuthDataSource {
         endpoint: ApiConstants.authSignUp,
       );
 
-      await _persistAuthTokenFromResponse(response);
-
       await _completeSignupProfile(
         gender: gender,
         sexualOrientation: sexualOrientation,
@@ -117,8 +115,6 @@ class AuthDataSourceImpl implements AuthDataSource {
         endpoint: ApiConstants.authSignInSocial,
       );
 
-      await _persistAuthTokenFromResponse(response);
-
       final responseUser = _extractUserFromAuthResponse(response.data);
       if (responseUser != null) {
         return responseUser;
@@ -169,8 +165,6 @@ class AuthDataSourceImpl implements AuthDataSource {
         response,
         endpoint: ApiConstants.authSignIn,
       );
-
-      await _persistAuthTokenFromResponse(response);
 
       final responseUser = _extractUserFromAuthResponse(payload);
       if (responseUser != null) {
@@ -223,42 +217,6 @@ class AuthDataSourceImpl implements AuthDataSource {
       return e.error as ApiException;
     }
     return ApiException.fromDio(e);
-  }
-
-  Future<void> _persistAuthTokenFromResponse(Response<dynamic> response) async {
-    final data = response.data;
-    final headerToken = response.headers.value('set-auth-token');
-    final bodyToken = data is Map<String, dynamic>
-        ? _firstNonEmptyString([
-            data['token'],
-            data['accessToken'],
-            data['bearerToken'],
-            (data['session'] is Map<String, dynamic>)
-                ? (data['session'] as Map<String, dynamic>)['token']
-                : null,
-          ])
-        : null;
-    final token = headerToken?.trim().isNotEmpty == true ? headerToken!.trim() : bodyToken;
-    if (token == null || token.isEmpty) {
-      if (kDebugMode) {
-        debugPrint('[AuthDataSource] No auth token found in auth response');
-      }
-      return;
-    }
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('auth_token', token);
-    if (kDebugMode) {
-      debugPrint('[AuthDataSource] Saved auth_token (${token.length} chars)');
-    }
-  }
-
-  String? _firstNonEmptyString(List<dynamic> values) {
-    for (final value in values) {
-      if (value is String && value.trim().isNotEmpty) {
-        return value.trim();
-      }
-    }
-    return null;
   }
 
   Map<String, dynamic> _asAuthResponseMapOrThrow(
