@@ -84,12 +84,18 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
   Future<void> _logout() async {
     try {
+      // Perform logout - this clears local auth state
       await ref.read(authStateProvider.notifier).logout();
-      // GoRouter redirect guard will push back to '/' automatically.
+      // GoRouter redirect will happen automatically when state is cleared
     } catch (e) {
       if (mounted) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Logout failed: $e')),
+          SnackBar(
+            content: Text('Error: $e'),
+            duration: const Duration(seconds: 5),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     }

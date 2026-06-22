@@ -374,21 +374,25 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future<void> logout() async {
     state = state.copyWith(isLoading: true, clearError: true);
     try {
-      await repository.logout();
+      // Try to call logout API, but don't fail if it errors
+      try {
+        await repository.logout();
+      } catch (e) {
+        // Log the error but continue with logout
+        print('[AuthProvider] Logout API error: $e');
+      }
+
+      // Always sign out from Google if signed in that way
       try {
         await GoogleSignIn.instance.signOut();
       } catch (_) {}
+
+      // Clear local auth state regardless of API response
       state = const AuthState(bootstrapPending: false);
-    } on ApiException catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        error: e.message,
-      );
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        error: e.toString(),
-      );
+      // Fallback: still clear state on unexpected errors
+      print('[AuthProvider] Unexpected logout error: $e');
+      state = const AuthState(bootstrapPending: false);
     }
   }
 

@@ -432,3 +432,175 @@ legal.post("/api/account/deletion-request", async (c) => {
 		return c.json({ error: "Failed to process deletion request" }, 500);
 	}
 });
+
+const childSafetyPolicyHTML = html`
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Child Safety Standards Policy - CasualMeets</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", sans-serif;
+      line-height: 1.6;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+      color: #333;
+      background: #f9f9f9;
+    }
+    .container {
+      background: white;
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      color: #000;
+      margin-top: 0;
+      font-size: 32px;
+    }
+    h2 {
+      color: #222;
+      margin-top: 30px;
+      font-size: 20px;
+      border-bottom: 2px solid #667eea;
+      padding-bottom: 10px;
+    }
+    h3 {
+      color: #333;
+      font-size: 16px;
+      margin-top: 20px;
+    }
+    .meta {
+      color: #666;
+      font-style: italic;
+      margin-bottom: 30px;
+      padding: 15px;
+      background: #f0f7ff;
+      border-left: 4px solid #667eea;
+      border-radius: 4px;
+    }
+    p {
+      margin: 12px 0;
+    }
+    ul, ol {
+      margin: 15px 0;
+      padding-left: 24px;
+    }
+    li {
+      margin: 8px 0;
+    }
+    strong {
+      color: #000;
+    }
+    .warning-box {
+      background: #ffe0e0;
+      border-left: 4px solid #d32f2f;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 4px;
+      color: #333;
+    }
+    .contact-box {
+      background: #e3f2fd;
+      border-left: 4px solid #1976d2;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 4px;
+    }
+    .contact-box strong {
+      display: block;
+      margin-bottom: 8px;
+    }
+    a {
+      color: #1976d2;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .last-updated {
+      color: #999;
+      font-size: 12px;
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid #eee;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Child Safety Standards Policy</h1>
+
+    <div class="meta">
+      <strong>Effective Date:</strong> June 22, 2026<br>
+      <strong>Published by:</strong> Neo Nebula
+    </div>
+
+    <p>CasualMeets is committed to providing a secure, responsible, and respectful environment for social discovery. We maintain a zero-tolerance stance against any form of child exploitation or abuse. This Child Safety Standards Policy outlines our mandatory rules, enforcement actions, and compliance protocols designed to combat Child Sexual Abuse and Exploitation (CSAE) and Child Sexual Abuse Material (CSAM).</p>
+
+    <h2>1. Standards Against Child Sexual Abuse and Exploitation (CSAE)</h2>
+    <p>CasualMeets is strictly an adult-only (18+) platform. The following actions are completely prohibited and will result in immediate, non-appealable termination of the offending user account:</p>
+    <ul>
+      <li>Engaging in, facilitating, or encouraging the sexual exploitation or abuse of children.</li>
+      <li>Attempting to groom, manipulate, or contact minors for sexual purposes.</li>
+      <li>Utilizing text, symbols, or hidden messaging to request, discuss, or organize activities related to the exploitation of minors.</li>
+    </ul>
+
+    <div class="warning-box">
+      <strong>⚠️ Violation Consequences:</strong> Any confirmed violation will result in immediate account suspension, permanent ban, preservation of evidence, and mandatory reporting to law enforcement authorities.
+    </div>
+
+    <h2>2. Prohibition and Handling of Child Sexual Abuse Material (CSAM)</h2>
+    <p>We strictly prohibit the uploading, transmission, sharing, or storage of Child Sexual Abuse Material (CSAM) across any part of our platform, including user profile cards, bio descriptions, and direct messaging channels.</p>
+
+    <h3>Detection & Filtering</h3>
+    <p>We employ automated metadata checks, image analysis, and backend architectural validations to prevent explicit content from being uploaded.</p>
+
+    <h3>Immediate Removal</h3>
+    <p>Any content flagged or identified as potentially containing CSAM is immediately hidden from public view and isolated for review. If verified, the content is permanently purged from active production directories, and the originating account is permanently banned via hardware and network device indexing.</p>
+
+    <h2>3. In-App Reporting and Feedback Mechanisms</h2>
+    <p>CasualMeets provides clear, always-accessible in-app reporting mechanics directly within the user interface:</p>
+    <ul>
+      <li>Users can flag any profile or direct message thread instantly using the in-app "Report" button.</li>
+      <li>When submitting a report, users can explicitly select "Child Safety Concern" or "Inappropriate Content" to route the ticket directly to our priority moderation queue.</li>
+      <li>All child safety reports are treated with the highest urgency and are reviewed by our systems administration team.</li>
+    </ul>
+
+    <h2>4. Legal Compliance and Global Law Enforcement Reporting</h2>
+    <p>CasualMeets complies strictly with international and regional child protection laws.</p>
+    <ul>
+      <li>In accordance with global legal requirements, we do not merely delete verified CSAM data.</li>
+      <li>We preserve the necessary forensic log footprints, device signatures, and account telemetry required by law enforcement.</li>
+      <li>All confirmed instances of CSAM or active child grooming will be reported immediately to the National Center for Missing & Exploited Children (NCMEC) and relevant national and regional judicial authorities.</li>
+    </ul>
+
+    <h2>5. Child Safety Designated Point of Contact</h2>
+    <p>For inquiries regarding our safety infrastructure, compliance updates, or coordinated law enforcement requests, our designated administrator can be reached directly:</p>
+
+    <div class="contact-box">
+      <strong>Email Contact:</strong> <a href="mailto:thabang.soulo@neonebula.co.za">thabang.soulo@neonebula.co.za</a><br>
+      <strong>Organization:</strong> Neo Nebula<br>
+      <strong>Availability:</strong> 24/7 for urgent law enforcement inquiries
+    </div>
+
+    <h2>6. Policy Updates and Enforcement</h2>
+    <p>CasualMeets reserves the right to update this policy as needed to maintain compliance with evolving legal standards and best practices in child protection. Any material changes will be communicated to users through in-app notifications.</p>
+
+    <p>This policy is enforced consistently and without exception. Users who violate any part of this policy will face immediate and permanent account termination, and their information will be preserved and reported to appropriate authorities as required by law.</p>
+
+    <div class="last-updated">
+      <p><strong>Last Updated:</strong> June 22, 2026</p>
+      <p>For the most up-to-date version of this policy, visit: <strong>/child-safety-policy</strong></p>
+    </div>
+  </div>
+</body>
+</html>
+`;
+
+legal.get("/child-safety-policy", (c) => {
+	return c.html(childSafetyPolicyHTML);
+});
