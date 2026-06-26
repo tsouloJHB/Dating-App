@@ -9,7 +9,7 @@ import 'premium_provider.dart';
 
 /// The subscription product ID — must match the subscription created in
 /// Google Play Console under your app's "Subscriptions" section.
-const kGoldSubscriptionId = 'justhookups_gold';
+const kGoldSubscriptionId = 'casual_dates_monthly';
 
 // ---------------------------------------------------------------------------
 // State

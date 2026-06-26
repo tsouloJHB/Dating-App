@@ -61,7 +61,7 @@ class PremiumScreen extends ConsumerWidget {
       await refreshAppTier();
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Gold unlocked (dev mode)')),
+          const SnackBar(content: Text('Xtra Class Premium unlocked (dev mode)')),
         );
       }
     }
@@ -101,7 +101,7 @@ class PremiumScreen extends ConsumerWidget {
             const AppBrandLogo(size: 30, borderRadius: 9),
             const SizedBox(width: 10),
             Text(
-              'Go Gold',
+              'Xtra Class Premium',
               style: TextStyle(color: textColor, fontWeight: FontWeight.bold),
             ),
           ],
@@ -144,7 +144,7 @@ class PremiumScreen extends ConsumerWidget {
                         color: Colors.white, size: 38),
                     const SizedBox(height: 14),
                     const Text(
-                      'Unlock Gold',
+                      'Unlock Xtra Class Premium',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 28,
@@ -170,7 +170,7 @@ class PremiumScreen extends ConsumerWidget {
                 textColor: textColor,
                 subColor: subColor,
                 title: 'Current Plan',
-                value: isPremium ? 'Gold Active' : 'Free Tier',
+                value: isPremium ? 'Xtra Class Premium Active' : 'Free Tier',
                 accent: isPremium ? gold : subColor,
               ),
 
@@ -246,7 +246,7 @@ class PremiumScreen extends ConsumerWidget {
                               ? (priceLabel != null
                                   ? 'Subscribe · $priceLabel'
                                   : 'Subscribe with Google Play')
-                              : 'Unlock Gold (Dev)',
+                              : 'Unlock Xtra Class Premium (Dev)',
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
@@ -280,7 +280,7 @@ class PremiumScreen extends ConsumerWidget {
                     ),
                   ),
                   child: const Text(
-                    'Gold Already Active ✓',
+                    'Xtra Class Premium Active ✓',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
                   ),
                 ),

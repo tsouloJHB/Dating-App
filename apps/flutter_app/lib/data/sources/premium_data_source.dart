@@ -39,7 +39,7 @@ class PremiumDataSourceImpl implements PremiumDataSource {
         ApiConstants.billingVerify,
         data: {
           'purchaseToken': googlePlaySubscriptionId,
-          'productId': 'justhookups_gold',
+          'productId': 'casual_dates_monthly',
           'platform': platform,
         },
       );
