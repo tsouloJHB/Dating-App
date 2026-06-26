@@ -10,7 +10,7 @@ import 'premium_provider.dart';
 
 /// The subscription product ID — must match the subscription created in
 /// Google Play Console under your app's "Subscriptions" section.
-const kGoldSubscriptionId = 'casual_dates_monthly';
+const kPremiumSubscriptionId = 'casual_dates_monthly';
 
 /// The base plan ID for the monthly subscription.
 const kBasePlanId = 'casual-dates-monthly';
@@ -23,7 +23,7 @@ class BillingState {
   const BillingState({
     this.isAvailable = false,
     this.isLoading = false,
-    this.goldProduct,
+    this.premiumProduct,
     this.purchasePending = false,
     this.error,
   });
@@ -32,7 +32,7 @@ class BillingState {
   final bool isLoading;
 
   /// Populated once the product has been fetched from Google Play.
-  final ProductDetails? goldProduct;
+  final ProductDetails? premiumProduct;
 
   /// True while waiting for the Play billing flow to complete.
   final bool purchasePending;
@@ -42,7 +42,7 @@ class BillingState {
   BillingState copyWith({
     bool? isAvailable,
     bool? isLoading,
-    ProductDetails? goldProduct,
+    ProductDetails? premiumProduct,
     bool? purchasePending,
     String? error,
     bool clearError = false,
@@ -51,7 +51,7 @@ class BillingState {
     return BillingState(
       isAvailable: isAvailable ?? this.isAvailable,
       isLoading: isLoading ?? this.isLoading,
-      goldProduct: clearProduct ? null : (goldProduct ?? this.goldProduct),
+      premiumProduct: clearProduct ? null : (premiumProduct ?? this.premiumProduct),
       purchasePending: purchasePending ?? this.purchasePending,
       error: clearError ? null : (error ?? this.error),
     );
@@ -99,7 +99,7 @@ class GooglePlayBillingNotifier extends StateNotifier<BillingState> {
 
   Future<void> _loadProduct() async {
     final response = await InAppPurchase.instance
-        .queryProductDetails({kGoldSubscriptionId});
+        .queryProductDetails({kPremiumSubscriptionId});
 
     if (!mounted) return;
 
@@ -119,7 +119,7 @@ class GooglePlayBillingNotifier extends StateNotifier<BillingState> {
     state = state.copyWith(
       isAvailable: true,
       isLoading: false,
-      goldProduct: product,
+      premiumProduct: product,
       clearError: true,
     );
   }
@@ -134,7 +134,7 @@ class GooglePlayBillingNotifier extends StateNotifier<BillingState> {
 
   /// Open the Google Play subscription purchase sheet.
   Future<void> buy() async {
-    final product = state.goldProduct;
+    final product = state.premiumProduct;
     if (product == null) {
       state = state.copyWith(error: 'Subscription details not loaded. Please try again.');
       return;

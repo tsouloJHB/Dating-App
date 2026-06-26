@@ -78,13 +78,13 @@ class RedButton extends StatelessWidget {
   }
 }
 
-class GoldPremiumCard extends StatelessWidget {
+class CasualDatesPremiumCard extends StatelessWidget {
   final String title;
   final String subtitle;
   final VoidCallback onTap;
   final bool isBlurred;
 
-  const GoldPremiumCard({
+  const CasualDatesPremiumCard({
     super.key,
     required this.title,
     required this.subtitle,

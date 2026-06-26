@@ -63,7 +63,7 @@ class PremiumState {
     );
   }
 
-  bool get isGoldMember =>
+  bool get isPremiumMember =>
       subscription != null &&
       subscription!.tier == SubscriptionTier.gold &&
       subscription!.isActive;

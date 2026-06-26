@@ -23,7 +23,7 @@ class PremiumScreen extends ConsumerWidget {
         isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
     final primary =
         isDark ? AppColors.darkPrimaryAction : AppColors.lightPrimaryAction;
-    final gold =
+    final premiumAccent =
         isDark ? AppColors.darkPremiumAccent : AppColors.lightPremiumAccent;
     final subColor = textColor.withOpacity(0.62);
 
@@ -53,7 +53,7 @@ class PremiumScreen extends ConsumerWidget {
     }
 
     // ── Action: dev / non-Android unlock for testing ──────────────────────
-    Future<void> buyDevGold() async {
+    Future<void> buyDevPremium() async {
       final token = 'dev-token-${DateTime.now().millisecondsSinceEpoch}';
       await ref
           .read(premiumStateProvider.notifier)
@@ -83,7 +83,7 @@ class PremiumScreen extends ConsumerWidget {
         (billingState?.purchasePending ?? false);
 
     // Price label from Google Play product details (e.g. "R49,99/month").
-    final priceLabel = billingState?.goldProduct?.price;
+    final priceLabel = billingState?.premiumProduct?.price;
 
     // Combined error to show.
     final errorMsg = (premiumState.error?.isNotEmpty == true)
@@ -132,7 +132,7 @@ class PremiumScreen extends ConsumerWidget {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(28),
                   gradient: LinearGradient(
-                    colors: [gold.withOpacity(0.95), primary.withOpacity(0.95)],
+                    colors: [premiumAccent.withOpacity(0.95), primary.withOpacity(0.95)],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -171,7 +171,7 @@ class PremiumScreen extends ConsumerWidget {
                 subColor: subColor,
                 title: 'Current Plan',
                 value: isPremium ? 'Xtra Class Premium Active' : 'Free Tier',
-                accent: isPremium ? gold : subColor,
+                accent: isPremium ? premiumAccent : subColor,
               ),
 
               // ── Expiry info ────────────────────────────────────────────
@@ -223,9 +223,9 @@ class PremiumScreen extends ConsumerWidget {
                       ? null
                       : isAndroid
                           ? buyWithGooglePlay
-                          : buyDevGold,
+                          : buyDevPremium,
                   style: FilledButton.styleFrom(
-                    backgroundColor: gold,
+                    backgroundColor: premiumAccent,
                     foregroundColor: Colors.white,
                     minimumSize: const Size.fromHeight(52),
                     shape: RoundedRectangleBorder(
@@ -272,7 +272,7 @@ class PremiumScreen extends ConsumerWidget {
                 FilledButton(
                   onPressed: null,
                   style: FilledButton.styleFrom(
-                    backgroundColor: gold.withOpacity(0.5),
+                    backgroundColor: premiumAccent.withOpacity(0.5),
                     foregroundColor: Colors.white,
                     minimumSize: const Size.fromHeight(52),
                     shape: RoundedRectangleBorder(
