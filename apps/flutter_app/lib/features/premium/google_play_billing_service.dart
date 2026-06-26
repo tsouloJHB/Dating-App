@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
+import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 
 import '../auth/auth_provider.dart';
 import 'premium_provider.dart';
@@ -10,6 +11,9 @@ import 'premium_provider.dart';
 /// The subscription product ID — must match the subscription created in
 /// Google Play Console under your app's "Subscriptions" section.
 const kGoldSubscriptionId = 'casual_dates_monthly';
+
+/// The base plan ID for the monthly subscription.
+const kBasePlanId = 'casual-dates-monthly';
 
 // ---------------------------------------------------------------------------
 // State
@@ -140,8 +144,25 @@ class GooglePlayBillingNotifier extends StateNotifier<BillingState> {
     state = state.copyWith(purchasePending: true, clearError: true);
 
     try {
-      final param = PurchaseParam(productDetails: product);
-      // buyNonConsumable is correct for subscriptions in the in_app_purchase plugin.
+      PurchaseParam param;
+
+      // On Android, select the offer matching our base plan ID so Google Play
+      // shows the correct pricing. Falls back to the first offer if not found.
+      if (Platform.isAndroid && product is GooglePlayProductDetails) {
+        final offers = product.subscriptionOfferDetails ?? [];
+        final offer = offers.firstWhere(
+          (o) => o.basePlanId == kBasePlanId,
+          orElse: () => offers.first,
+        );
+        param = GooglePlayPurchaseParam(
+          productDetails: product,
+          changeSubscriptionParam: null,
+          offerToken: offer.offerToken,
+        );
+      } else {
+        param = PurchaseParam(productDetails: product);
+      }
+
       await InAppPurchase.instance.buyNonConsumable(purchaseParam: param);
     } catch (e) {
       if (mounted) {
